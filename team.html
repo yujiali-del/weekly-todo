@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>团队每周待办 Team Weekly To-Do</title>
+<style>
+  :root {
+    --bg: #F6F5F1;
+    --surface: #FFFFFF;
+    --surface-2: #EFEEE7;
+    --ink: #24282B;
+    --ink-2: #7A7F84;
+    --ink-3: #A8ACB0;
+    --line: #E3E1D8;
+    --accent: #2E7D5B;
+    --accent-ink: #24634A;
+    --accent-soft: #E4F0E9;
+    --danger: #B4433A;
+    --pri-high: #C74A40;
+    --pri-med: #D19C2F;
+    --shadow: 0 1px 2px rgba(40, 42, 38, .05), 0 4px 14px rgba(40, 42, 38, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181B; --surface: #1E2125; --surface-2: #24282D;
+      --ink: #E8E6DF; --ink-2: #9BA0A5; --ink-3: #6B7076; --line: #2E3338;
+      --accent: #5FBB90; --accent-ink: #7BCCA4; --accent-soft: #1E3A2D;
+      --danger: #D97C72; --pri-high: #E07A70; --pri-med: #DBB25E;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.5; min-height: 100vh;
+  }
+  .wrap { max-width: 1360px; margin: 0 auto; padding: 26px 24px 56px; }
+
+  header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+  .title-block .eyebrow { font-size: 11px; letter-spacing: .18em; color: var(--accent-ink); text-transform: uppercase; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+  h1.week-title { font-family: Georgia, "Songti SC", "STSong", serif; font-size: 30px; font-weight: 600; margin: 0; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+  .week-sub { color: var(--ink-2); margin-top: 4px; font-size: 13px; }
+
+  .sync-pill {
+    font-size: 11px; letter-spacing: 0; text-transform: none; font-weight: 500;
+    border-radius: 99px; padding: 2px 10px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink-2); white-space: nowrap;
+  }
+  .sync-pill.ok { color: var(--accent-ink); border-color: var(--accent); }
+  .sync-pill.bad { color: var(--danger); border-color: var(--danger); }
+
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 8px; padding: 7px 13px; font-size: 13px; cursor: pointer; font-family: inherit;
+    transition: background .15s, border-color .15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn:focus-visible, .task:focus-visible, .add-input:focus-visible, .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn.today-btn { color: var(--accent-ink); border-color: var(--accent); font-weight: 500; }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+  .btn.ghost:hover { color: var(--danger); background: transparent; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+  @media (prefers-color-scheme: dark) { .btn.primary { color: #10281C; } }
+  .btn.primary:hover { filter: brightness(1.06); background: var(--accent); }
+
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { appearance: none; border: none; background: transparent; color: var(--ink-2); padding: 7px 13px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .seg button.active { background: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { .seg button.active { color: #10281C; } }
+
+  details.menu { position: relative; }
+  details.menu > summary {
+    list-style: none; cursor: pointer; border: 1px solid var(--line); background: var(--surface);
+    color: var(--ink); border-radius: 8px; padding: 7px 13px; font-size: 13px; white-space: nowrap;
+  }
+  details.menu > summary::-webkit-details-marker { display: none; }
+  details.menu > summary:hover { background: var(--surface-2); }
+  details.menu[open] > summary { border-color: var(--accent); }
+  .menu-pop {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 6px; min-width: 190px; display: flex; flex-direction: column; gap: 2px;
+  }
+  .menu-pop button { appearance: none; border: none; background: transparent; color: var(--ink); text-align: left; padding: 8px 10px; border-radius: 7px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .menu-pop button:hover { background: var(--surface-2); }
+
+  /* member filter bar */
+  .filter-bar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .chip {
+    appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+    border-radius: 99px; padding: 4px 12px; font-size: 12px; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .chip:hover { border-color: var(--ink-3); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { .chip.active { color: #10281C; } }
+  .avatar {
+    width: 18px; height: 18px; border-radius: 50%; flex: none;
+    display: grid; place-items: center; font-size: 10px; font-weight: 700; color: #fff;
+  }
+  .chip .count { font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; }
+
+  .banner {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--ink);
+  }
+  .banner.warn { background: color-mix(in srgb, var(--danger) 8%, var(--surface)); border-color: var(--danger); }
+  .banner .btn { padding: 5px 11px; font-size: 12px; }
+  .banner b { color: var(--accent-ink); }
+
+  .board-scroll { overflow-x: auto; padding-bottom: 8px; }
+  .board { display: grid; grid-template-columns: repeat(5, minmax(206px, 1fr)) minmax(206px, 1fr); gap: 13px; align-items: start; min-width: 1240px; }
+  .board.wknd-collapsed { grid-template-columns: repeat(5, minmax(206px, 1fr)) 46px; min-width: 1090px; }
+  @media (max-width: 900px) {
+    .board, .board.wknd-collapsed { grid-template-columns: 1fr; min-width: 0; }
+    .board-scroll { overflow-x: visible; }
+    .col.wknd-strip .strip-label { writing-mode: horizontal-tb !important; padding: 10px !important; }
+  }
+
+  .col { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 240px; }
+  .col.is-today { border-color: var(--accent); }
+  .col.is-wknd { background: color-mix(in srgb, var(--surface-2) 45%, var(--surface)); }
+  .col.drop-hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface)); }
+  .col.wknd-strip { min-height: 240px; cursor: pointer; align-items: center; background: color-mix(in srgb, var(--surface-2) 45%, var(--surface)); }
+  .col.wknd-strip:hover { border-color: var(--accent); }
+  .col.wknd-strip .strip-label { writing-mode: vertical-rl; letter-spacing: .25em; font-size: 12px; color: var(--ink-2); padding: 16px 0; user-select: none; white-space: nowrap; }
+  .col.wknd-strip .strip-count { background: var(--accent); color: #fff; font-size: 10px; font-weight: 600; border-radius: 99px; padding: 1px 6px; margin-top: 6px; }
+
+  .col-head { display: flex; align-items: baseline; gap: 8px; padding: 13px 14px 9px; border-bottom: 1px solid var(--line); }
+  .day-name { font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .day-en { font-size: 10px; letter-spacing: .16em; color: var(--ink-3); font-weight: 600; }
+  .day-date { margin-left: auto; color: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .today-chip { background: var(--accent); color: #fff; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 99px; letter-spacing: .05em; }
+  @media (prefers-color-scheme: dark) { .today-chip { color: #10281C; } }
+  .col-count { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .collapse-btn { appearance: none; border: none; background: transparent; color: var(--ink-3); cursor: pointer; font-size: 12px; padding: 0 2px; align-self: center; }
+  .collapse-btn:hover { color: var(--ink); }
+
+  .task-list { list-style: none; margin: 0; padding: 8px 8px 2px; flex: 1; min-height: 60px; }
+
+  .task { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 6px; cursor: grab; position: relative; transition: box-shadow .15s, border-color .15s; }
+  .task:hover { border-color: var(--ink-3); box-shadow: var(--shadow); }
+  .task.dragging { opacity: .35; cursor: grabbing; }
+  .task.done .task-text { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-3); }
+  .task-main { display: flex; align-items: flex-start; gap: 7px; padding: 8px 8px 8px 9px; }
+
+  .task-check {
+    appearance: none; width: 16px; height: 16px; margin: 2px 0 0; border: 1.5px solid var(--ink-3);
+    border-radius: 5px; cursor: pointer; flex: none; position: relative; background: transparent;
+    transition: background .12s, border-color .12s;
+  }
+  .task-check:checked { background: var(--accent); border-color: var(--accent); }
+  .task-check:checked::after { content: ""; position: absolute; left: 4.2px; top: 1.2px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+  .pri-dot { appearance: none; border: none; background: transparent; padding: 0; width: 14px; height: 14px; margin-top: 3.5px; flex: none; cursor: pointer; border-radius: 50%; position: relative; }
+  .pri-dot::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; border: 1.5px solid var(--ink-3); transition: background .12s, border-color .12s; }
+  .pri-dot.pri-med::after { background: var(--pri-med); border-color: var(--pri-med); }
+  .pri-dot.pri-high::after { background: var(--pri-high); border-color: var(--pri-high); }
+  .pri-dot:hover::after { transform: scale(1.15); }
+
+  .task-text { flex: 1; word-break: break-word; min-width: 0; padding: 1px 0; border-radius: 4px; }
+  .task-text[contenteditable="true"] { outline: 2px solid var(--accent); outline-offset: 2px; cursor: text; background: var(--surface); }
+
+  .task-badges { display: flex; gap: 4px; flex: none; align-items: center; margin-top: 2px; }
+  .badge { font-size: 10px; color: var(--ink-2); background: var(--surface-2); border-radius: 5px; padding: 1px 5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .badge.day-chip { color: var(--accent-ink); background: var(--accent-soft); }
+  .task .avatar { width: 17px; height: 17px; font-size: 9px; margin-top: 2px; cursor: default; }
+
+  .task-actions { display: flex; gap: 1px; flex: none; opacity: 0; transition: opacity .12s; }
+  .task:hover .task-actions, .task:focus-within .task-actions { opacity: 1; }
+  .task.has-detail .task-actions { opacity: 1; }
+  .icon-btn { appearance: none; border: none; background: transparent; color: var(--ink-3); width: 21px; height: 21px; border-radius: 6px; cursor: pointer; font-size: 12px; line-height: 1; display: grid; place-items: center; padding: 0; }
+  .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .icon-btn.del:hover { color: var(--danger); }
+  .icon-btn.expand { transition: transform .15s; }
+  .icon-btn.expand.open { transform: rotate(90deg); }
+
+  .task-detail { border-top: 1px dashed var(--line); padding: 8px 9px 9px 32px; cursor: default; }
+  .detail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .detail-row label { font-size: 11px; color: var(--ink-3); }
+  .assignee-select { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; font: inherit; font-size: 12px; padding: 2px 6px; }
+  .note-input { width: 100%; border: none; background: transparent; resize: none; font: inherit; font-size: 12.5px; color: var(--ink-2); padding: 0; line-height: 1.5; min-height: 20px; }
+  .note-input:focus { outline: none; color: var(--ink); }
+  .note-input::placeholder { color: var(--ink-3); }
+  .subs { list-style: none; margin: 6px 0 0; padding: 0; }
+  .subs li { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .subs .task-check { width: 13px; height: 13px; margin: 0; border-radius: 4px; }
+  .subs .task-check:checked::after { left: 3.2px; top: 0.4px; width: 3.5px; height: 7px; }
+  .sub-text { flex: 1; font-size: 12.5px; min-width: 0; word-break: break-word; }
+  .subs li.done .sub-text { color: var(--ink-3); text-decoration: line-through; }
+  .subs .icon-btn { opacity: 0; }
+  .subs li:hover .icon-btn { opacity: 1; }
+  .sub-add { width: 100%; border: none; background: transparent; font: inherit; font-size: 12.5px; color: var(--ink); padding: 3px 0 0; margin-top: 2px; }
+  .sub-add::placeholder { color: var(--ink-3); }
+  .sub-add:focus { outline: none; }
+
+  .placeholder { height: 36px; border: 1.5px dashed var(--accent); border-radius: 8px; background: var(--accent-soft); margin-bottom: 6px; list-style: none; }
+  .empty-hint { color: var(--ink-3); font-size: 12px; text-align: center; padding: 18px 0 8px; user-select: none; }
+
+  .col-foot { padding: 4px 8px 10px; }
+  .add-input { width: 100%; border: 1px dashed var(--line); background: transparent; border-radius: 8px; padding: 8px 10px; font: inherit; color: var(--ink); }
+  .add-input::placeholder { color: var(--ink-3); }
+  .add-input:focus { border-style: solid; border-color: var(--accent); outline: none; background: var(--surface); }
+
+  .quad-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 13px; min-height: 62vh; }
+  @media (max-width: 760px) { .quad-grid { grid-template-columns: 1fr; grid-template-rows: none; min-height: 0; } }
+  .quad { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 200px; }
+  .quad.drop-hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface)); }
+  .quad-head { padding: 12px 14px 8px; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; gap: 8px; }
+  .quad-title { font-weight: 600; font-size: 14px; }
+  .quad-hint { font-size: 11px; color: var(--ink-3); margin-left: auto; text-align: right; }
+  .quad-mark { width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; }
+  .q1 .quad-mark { background: var(--pri-high); }
+  .q2 .quad-mark { background: var(--accent); }
+  .q3 .quad-mark { background: var(--pri-med); }
+  .q4 .quad-mark { background: var(--ink-3); }
+
+  .overlay { position: fixed; inset: 0; background: rgba(20, 22, 20, .45); display: grid; place-items: center; z-index: 100; padding: 20px; }
+  .modal { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); width: min(680px, 100%); max-height: 88vh; display: flex; flex-direction: column; }
+  .modal-head { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .modal-head h2 { margin: 0; font-size: 16px; font-family: Georgia, "Songti SC", serif; }
+  .modal-head .icon-btn { margin-left: auto; width: 26px; height: 26px; font-size: 14px; }
+  .modal-body { padding: 14px 18px; overflow: auto; }
+  .modal-body textarea.report { width: 100%; min-height: 340px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: 12.5px/1.7 ui-monospace, "SF Mono", Menlo, monospace; padding: 12px; resize: vertical; }
+  .modal-foot { padding: 12px 18px 16px; display: flex; gap: 8px; justify-content: flex-end; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 5px; }
+  .field input { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; padding: 9px 11px; }
+  .field input:focus { outline: none; border-color: var(--accent); }
+  .field .note { font-size: 11.5px; color: var(--ink-3); margin-top: 5px; line-height: 1.6; }
+  .setup-steps { font-size: 12.5px; color: var(--ink-2); background: var(--surface-2); border-radius: 10px; padding: 12px 14px; line-height: 1.8; margin-bottom: 14px; }
+  .setup-steps b { color: var(--ink); }
+  .setup-steps code { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 11.5px; }
+  .setup-steps a { color: var(--accent-ink); }
+
+  footer.hint { margin-top: 20px; color: var(--ink-3); font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  footer.hint span::before { content: "· "; color: var(--accent); }
+  footer.hint a { color: var(--ink-2); }
+
+  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); font-size: 13px; padding: 9px 18px; border-radius: 99px; z-index: 200; box-shadow: var(--shadow); opacity: 0; transition: opacity .2s; }
+  .toast.show { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <div class="eyebrow">Team Weekly To-Do <span class="sync-pill" id="syncPill">未连接</span></div>
+      <h1 class="week-title" id="weekTitle"></h1>
+      <div class="week-sub" id="weekSub"></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="prevWeek">← 上周</button>
+      <button class="btn today-btn" id="thisWeek">本周</button>
+      <button class="btn" id="nextWeek">下周 →</button>
+      <span class="seg">
+        <button id="viewWeek" class="active">周视图</button>
+        <button id="viewQuad">四象限</button>
+      </span>
+      <button class="btn" id="reportBtn">团队周报</button>
+      <details class="menu" id="exportMenu">
+        <summary>更多 ▾</summary>
+        <div class="menu-pop">
+          <button id="copyText">复制本周为文字</button>
+          <button id="expJson">下载 JSON 备份</button>
+          <button id="clearDone">清除本周已完成</button>
+          <button id="inviteBtn">邀请成员…</button>
+        </div>
+      </details>
+      <button class="btn" id="settingsBtn">⚙ 设置</button>
+    </div>
+  </header>
+
+  <div class="filter-bar" id="filterBar"></div>
+  <div id="bannerHost"></div>
+
+  <div class="board-scroll" id="weekView">
+    <div class="board" id="board"></div>
+  </div>
+  <div class="quad-grid" id="quadView" style="display:none"></div>
+
+  <footer class="hint">
+    <span>回车添加 · 拖拽移动 · ⌥ 拖拽复制</span>
+    <span>点圆点切换优先级 ⚪→🟡→🔴</span>
+    <span>点 ▸ 设负责人 / 备注 / 子任务</span>
+    <span>双击文字编辑</span>
+    <span>数据同步保存在团队的 GitHub 私有仓库</span>
+    <span><a href="index.html">个人版 →</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+  /* ═══ config ═══ */
+  var OWNER = "yujiali-del";           // injected at deploy time
+  var DATA_REPO = "weekly-todo-data";
+  var API = "https://api.github.com";
+  var teamId = (location.hash.match(/team=([A-Za-z0-9_-]+)/) || [])[1] || "main";
+  var CFG_KEY = "wtt-cfg-v1";
+  var CACHE_KEY = "wtt-cache-" + teamId;
+  var POLL_MS = 25000;
+  var COLORS = ["#2E7D5B", "#B4433A", "#3A6EA5", "#D19C2F", "#7A4FA0", "#C05F8A", "#4B8A8A", "#8A6D3B"];
+
+  var DAYS = [{ cn: "周一", en: "MON" }, { cn: "周二", en: "TUE" }, { cn: "周三", en: "WED" }, { cn: "周四", en: "THU" }, { cn: "周五", en: "FRI" }];
+  var PRI_ORDER = { high: 0, med: 1, low: 2 };
+  var PRI_NAME = { high: "高", med: "中", low: "低" };
+
+  /* ═══ state ═══ */
+  var cfg = loadJSON(CFG_KEY) || {};        // {name, token, memberId, wkndCollapsed}
+  var doc = loadJSON(CACHE_KEY) || { v: 1, members: {}, tasks: {} };
+  var remoteSha = null;
+  var weekOffset = 0;
+  var view = "week";
+  var filterMember = null;                  // null=all, or memberId
+  var drag = null, placeholder = null, expandedId = null, focusSubOf = null;
+  var dirty = false, pushing = false, pushTimer = null, pollTimer = null;
+  var notFound = false;
+
+  function loadJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function saveCfg() { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }
+  function cacheDoc() { try { localStorage.setItem(CACHE_KEY, JSON.stringify(doc)); } catch (e) {} }
+  function uid() { return "t" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+
+  /* ═══ dates ═══ */
+  function mondayOf(offset) {
+    var now = new Date();
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + offset * 7);
+    return d;
+  }
+  function addDays(date, n) { var d = new Date(date); d.setDate(d.getDate() + n); return d; }
+  function keyOf(date) {
+    return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+  }
+  function todayKey() { return keyOf(new Date()); }
+  function fmtMD(key) { var p = key.split("-"); return (+p[1]) + "/" + (+p[2]); }
+  function weekKeys(mon) {
+    var keys = [];
+    for (var i = 0; i < 5; i++) keys.push(keyOf(addDays(mon, i)));
+    keys.push(keyOf(addDays(mon, 5)));
+    return keys;
+  }
+  function normalizeKey(key) {
+    var d = new Date(key + "T00:00:00");
+    return d.getDay() === 0 ? keyOf(addDays(d, -1)) : key;
+  }
+  function dayLabelOf(key, mondayKey) {
+    var diff = Math.round((new Date(key + "T00:00:00") - new Date(mondayKey + "T00:00:00")) / 86400000);
+    if (diff >= 0 && diff < 5) return DAYS[diff].cn;
+    if (diff === 5 || diff === 6) return "周末";
+    return fmtMD(key);
+  }
+
+  /* ═══ doc helpers ═══ */
+  function liveTasks() { return Object.values(doc.tasks).filter(function (t) { return !t.del; }); }
+  function tasksOf(key) {
+    return liveTasks().filter(function (t) { return t.date === key; })
+      .sort(function (a, b) { return (a.order - b.order) || a.id.localeCompare(b.id); });
+  }
+  function visible(t) {
+    if (!filterMember) return true;
+    return (t.assignee || "") === filterMember;
+  }
+  function memberOf(id) { return (id && doc.members[id] && !doc.members[id].del) ? doc.members[id] : null; }
+  function myId() { return cfg.memberId; }
+  function colorOf(id) {
+    var h = 0; for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+    return COLORS[h % COLORS.length];
+  }
+  function touch(t) { t.u = Date.now(); markDirty(); }
+  function markDirty() { dirty = true; cacheDoc(); schedulePush(); }
+  function isImportant(t) { return t.pri === "high" || t.pri === "med"; }
+  function isUrgent(key) { return key <= todayKey(); }
+  function cloneTask(t, date) {
+    return { id: uid(), date: date || t.date, order: t.order + 0.5, text: t.text, done: false, pri: t.pri || "low",
+      assignee: t.assignee || "", note: t.note || "",
+      subs: (t.subs || []).map(function (s) { return { id: uid(), text: s.text, done: false }; }), u: Date.now() };
+  }
+  function nextOrder(key) {
+    var list = tasksOf(key);
+    return list.length ? list[list.length - 1].order + 10 : 10;
+  }
+
+  /* ═══ merge (task-level, last-write-wins by timestamp) ═══ */
+  function mergeDocs(remote, local) {
+    var out = { v: 1, members: {}, tasks: {} };
+    var ids = {}, k;
+    for (k in remote.tasks) ids[k] = 1;
+    for (k in local.tasks) ids[k] = 1;
+    for (k in ids) {
+      var a = remote.tasks[k], b = local.tasks[k];
+      out.tasks[k] = (!a) ? b : (!b) ? a : ((b.u || 0) >= (a.u || 0) ? b : a);
+    }
+    var mids = {};
+    for (k in remote.members) mids[k] = 1;
+    for (k in local.members) mids[k] = 1;
+    for (k in mids) {
+      var ma = remote.members[k], mb = local.members[k];
+      out.members[k] = (!ma) ? mb : (!mb) ? ma : ((mb.u || 0) >= (ma.u || 0) ? mb : ma);
+    }
+    // prune tombstones older than 30 days
+    var cutoff = Date.now() - 30 * 86400000;
+    for (k in out.tasks) if (out.tasks[k].del && (out.tasks[k].u || 0) < cutoff) delete out.tasks[k];
+    return out;
+  }
+  function docsEqual(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+
+  /* ═══ GitHub API sync ═══ */
+  function apiHeaders() {
+    return {
+      "Authorization": "Bearer " + cfg.token,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+  }
+  function filePath() { return "teams/" + teamId + ".json"; }
+  function b64encode(str) { return btoa(unescape(encodeURIComponent(str))); }
+  function b64decode(str) { return decodeURIComponent(escape(atob(str.replace(/\n/g, "")))); }
+
+  function ghGet() {
+    return fetch(API + "/repos/" + OWNER + "/" + DATA_REPO + "/contents/" + filePath() + "?ref=main&ts=" + Date.now(),
+      { headers: apiHeaders(), cache: "no-store" })
+      .then(function (r) {
+        if (r.status === 404) return { notFound: true };
+        if (r.status === 401 || r.status === 403) throw { auth: true };
+        if (!r.ok) throw new Error("GET " + r.status);
+        return r.json().then(function (j) {
+          return { sha: j.sha, doc: JSON.parse(b64decode(j.content)) };
+        });
+      });
+  }
+  function ghPut(newDoc, sha) {
+    var body = {
+      message: "update " + teamId + (cfg.name ? " by " + cfg.name : ""),
+      content: b64encode(JSON.stringify(newDoc)),
+      branch: "main"
+    };
+    if (sha) body.sha = sha;
+    return fetch(API + "/repos/" + OWNER + "/" + DATA_REPO + "/contents/" + filePath(),
+      { method: "PUT", headers: apiHeaders(), body: JSON.stringify(body) })
+      .then(function (r) {
+        if (r.status === 401 || r.status === 403) throw { auth: true };
+        if (r.status === 409 || r.status === 422) throw { conflict: true };
+        if (!r.ok) throw new Error("PUT " + r.status);
+        return r.json();
+      });
+  }
+
+  function setPill(cls, text) {
+    var p = document.getElementById("syncPill");
+    p.className = "sync-pill" + (cls ? " " + cls : "");
+    p.textContent = text;
+  }
+
+  function schedulePush() {
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(doPush, 1200);
+  }
+
+  function doPush(attempt) {
+    attempt = attempt || 0;
+    if (!cfg.token || pushing || !dirty) return;
+    pushing = true;
+    setPill("", "同步中…");
+    ghGet().then(function (r) {
+      var merged = r.notFound ? doc : mergeDocs(r.doc, doc);
+      return ghPut(merged, r.notFound ? null : r.sha).then(function (res) {
+        doc = merged;
+        remoteSha = res.content && res.content.sha;
+        dirty = false; notFound = false;
+        cacheDoc();
+        setPill("ok", "已同步 " + new Date().toTimeString().slice(0, 5));
+        render();
+      });
+    }).catch(function (e) {
+      if (e && e.conflict && attempt < 2) { pushing = false; return doPush(attempt + 1); }
+      if (e && e.auth) setPill("bad", "Token 无效");
+      else setPill("bad", "离线，稍后重试");
+    }).finally(function () { pushing = false; });
+  }
+
+  function doPoll() {
+    if (!cfg.token) return;
+    if (dirty) { doPush(); return; }
+    ghGet().then(function (r) {
+      if (r.notFound) { notFound = true; render(); return; }
+      notFound = false;
+      if (r.sha === remoteSha) { setPill("ok", "已同步 " + new Date().toTimeString().slice(0, 5)); return; }
+      var merged = mergeDocs(r.doc, doc);
+      remoteSha = r.sha;
+      var changed = !docsEqual(merged, doc);
+      doc = merged;
+      cacheDoc();
+      setPill("ok", "已同步 " + new Date().toTimeString().slice(0, 5));
+      if (changed) render();
+    }).catch(function (e) {
+      if (e && e.auth) setPill("bad", "Token 无效");
+      else setPill("bad", "离线，稍后重试");
+    });
+  }
+
+  function startPolling() {
+    clearInterval(pollTimer);
+    pollTimer = setInterval(doPoll, POLL_MS);
+    doPoll();
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && cfg.token) doPoll();
+  });
+
+  /* ═══ toast ═══ */
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2400);
+  }
+
+  /* ═══ render ═══ */
+  var board = document.getElementById("board");
+  var quadView = document.getElementById("quadView");
+  var weekView = document.getElementById("weekView");
+
+  function render() {
+    var mon = mondayOf(weekOffset);
+    var keys = weekKeys(mon);
+    var fri = addDays(mon, 4);
+    var sameMonth = mon.getMonth() === fri.getMonth();
+    document.getElementById("weekTitle").textContent =
+      (mon.getMonth() + 1) + "月" + mon.getDate() + "日 – " + (sameMonth ? "" : (fri.getMonth() + 1) + "月") + fri.getDate() + "日";
+
+    var total = 0, done = 0;
+    keys.forEach(function (k) {
+      tasksOf(k).forEach(function (t) { if (!visible(t)) return; total++; if (t.done) done++; });
+    });
+    document.getElementById("weekSub").textContent =
+      mon.getFullYear() + " 年 · 团队「" + teamId + "」 · " +
+      (weekOffset === 0 ? "本周" : weekOffset > 0 ? weekOffset + " 周后" : (-weekOffset) + " 周前") +
+      " · 完成 " + done + " / " + total;
+
+    renderFilterBar();
+    renderBanner(keys);
+    if (view === "week") { weekView.style.display = ""; quadView.style.display = "none"; renderWeek(mon, keys); }
+    else { weekView.style.display = "none"; quadView.style.display = ""; renderQuad(mon, keys); }
+  }
+
+  function renderFilterBar() {
+    var bar = document.getElementById("filterBar");
+    bar.innerHTML = "";
+    var counts = {};
+    var mon = mondayOf(weekOffset), keys = weekKeys(mon);
+    keys.forEach(function (k) {
+      tasksOf(k).forEach(function (t) {
+        var a = t.assignee || "";
+        counts[a] = (counts[a] || 0) + (t.done ? 0 : 1);
+      });
+    });
+    function chip(label, mid, avatarColor) {
+      var b = document.createElement("button");
+      b.className = "chip" + ((filterMember || null) === mid ? " active" : "");
+      if (avatarColor) {
+        var av = document.createElement("span");
+        av.className = "avatar";
+        av.style.background = avatarColor;
+        av.textContent = label.slice(0, 1);
+        b.appendChild(av);
+      }
+      var t = document.createElement("span");
+      t.textContent = label;
+      b.appendChild(t);
+      var n = mid === null
+        ? Object.values(counts).reduce(function (s, x) { return s + x; }, 0)
+        : (counts[mid] || 0);
+      if (n) {
+        var c = document.createElement("span");
+        c.className = "count";
+        c.textContent = n;
+        b.appendChild(c);
+      }
+      b.addEventListener("click", function () { filterMember = mid; render(); });
+      bar.appendChild(b);
+    }
+    chip("全部", null);
+    Object.keys(doc.members).forEach(function (id) {
+      var m = doc.members[id];
+      if (m.del) return;
+      chip(m.name + (id === myId() ? "（我）" : ""), id, m.color || colorOf(id));
+    });
+    if (counts[""]) chip("未分配", "");
+  }
+
+  /* ═══ banners ═══ */
+  function renderBanner(keys) {
+    var host = document.getElementById("bannerHost");
+    host.innerHTML = "";
+
+    if (OWNER.indexOf("__") === 0) {
+      var d0 = document.createElement("div");
+      d0.className = "banner warn";
+      d0.textContent = "⚠ 页面尚未完成部署配置（缺少仓库信息）。";
+      host.appendChild(d0);
+      return;
+    }
+    if (!cfg.token) {
+      var d1 = document.createElement("div");
+      d1.className = "banner";
+      d1.innerHTML = "👋 首次使用：点右上角 <b>⚙ 设置</b> 填写你的名字和团队 Token，即可开始多人协作。";
+      host.appendChild(d1);
+      return;
+    }
+    if (notFound) {
+      var d2 = document.createElement("div");
+      d2.className = "banner";
+      d2.innerHTML = "团队空间「<b>" + teamId + "</b>」还不存在。";
+      var btn = document.createElement("button");
+      btn.className = "btn primary";
+      btn.textContent = "创建团队空间";
+      btn.addEventListener("click", function () {
+        dirty = true;
+        doPush();
+        toast("正在创建…");
+      });
+      d2.appendChild(btn);
+      host.appendChild(d2);
+      return;
+    }
+
+    // rollover
+    var monKey = keyOf(mondayOf(0));
+    if ((cfg.rolloverDismissed || "") === todayKey()) return;
+    var pending = liveTasks().filter(function (t) { return t.date < monKey && !t.done; });
+    if (!pending.length) return;
+    var div = document.createElement("div");
+    div.className = "banner";
+    div.innerHTML = "⏳ 之前有 <b>" + pending.length + "</b> 项未完成待办，要移到今天吗？";
+    var moveBtn = document.createElement("button");
+    moveBtn.className = "btn";
+    moveBtn.textContent = "移到今天";
+    moveBtn.addEventListener("click", function () {
+      var target = new Date();
+      if (target.getDay() === 6) target = addDays(target, 2);
+      if (target.getDay() === 0) target = addDays(target, 1);
+      var tk = keyOf(target);
+      pending.forEach(function (t) { t.date = tk; t.order = nextOrder(tk); t.u = Date.now(); });
+      markDirty(); render();
+      toast("已顺延 " + pending.length + " 项到今天");
+    });
+    var disBtn = document.createElement("button");
+    disBtn.className = "btn ghost";
+    disBtn.textContent = "今天不再提醒";
+    disBtn.addEventListener("click", function () { cfg.rolloverDismissed = todayKey(); saveCfg(); render(); });
+    div.appendChild(moveBtn);
+    div.appendChild(disBtn);
+    host.appendChild(div);
+  }
+
+  /* ═══ week view ═══ */
+  function renderWeek(mon, keys) {
+    board.innerHTML = "";
+    var tKey = todayKey();
+    var collapsed = cfg.wkndCollapsed !== false;
+    board.classList.toggle("wknd-collapsed", collapsed);
+
+    keys.forEach(function (key, i) {
+      var isWknd = i === 5;
+      var list = tasksOf(key).filter(visible);
+
+      if (isWknd && collapsed) {
+        var strip = document.createElement("div");
+        strip.className = "col wknd-strip";
+        strip.title = "展开周末 / 机动栏";
+        var label = document.createElement("div");
+        label.className = "strip-label";
+        label.textContent = "周末 · 机动";
+        strip.appendChild(label);
+        var undone = list.filter(function (t) { return !t.done; }).length;
+        if (undone) {
+          var c = document.createElement("span");
+          c.className = "strip-count";
+          c.textContent = undone;
+          strip.appendChild(c);
+        }
+        strip.addEventListener("click", function () { cfg.wkndCollapsed = false; saveCfg(); render(); });
+        strip.addEventListener("dragover", function (e) {
+          if (!drag) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = e.altKey ? "copy" : "move";
+          strip.classList.add("drop-hover");
+        });
+        strip.addEventListener("dragleave", function () { strip.classList.remove("drop-hover"); });
+        strip.addEventListener("drop", function (e) {
+          if (!drag) return;
+          e.preventDefault();
+          moveDragged(key, Infinity, e.altKey);
+        });
+        board.appendChild(strip);
+        return;
+      }
+
+      var isToday = key === tKey;
+      var col = document.createElement("div");
+      col.className = "col" + (isToday ? " is-today" : "") + (isWknd ? " is-wknd" : "");
+      col.dataset.key = key;
+
+      var head = document.createElement("div");
+      head.className = "col-head";
+      var doneN = list.filter(function (t) { return t.done; }).length;
+      var date = addDays(mon, i);
+      head.innerHTML = isWknd
+        ? '<span class="day-name">周末 · 机动</span><span class="day-en">SAT–SUN</span>' +
+          '<span class="day-date">' + (list.length ? '<span class="col-count">' + doneN + "/" + list.length + "</span>" : "") + "</span>"
+        : '<span class="day-name">' + DAYS[i].cn + "</span>" +
+          '<span class="day-en">' + DAYS[i].en + "</span>" +
+          (isToday ? '<span class="today-chip">今天</span>' : "") +
+          '<span class="day-date">' + (date.getMonth() + 1) + "/" + date.getDate() +
+          (list.length ? ' <span class="col-count">' + doneN + "/" + list.length + "</span>" : "") + "</span>";
+      if (isWknd) {
+        var cb = document.createElement("button");
+        cb.className = "collapse-btn";
+        cb.title = "折叠";
+        cb.textContent = "⇥";
+        cb.addEventListener("click", function () { cfg.wkndCollapsed = true; saveCfg(); render(); });
+        head.appendChild(cb);
+      }
+      col.appendChild(head);
+
+      var ul = document.createElement("ul");
+      ul.className = "task-list";
+      ul.dataset.key = key;
+      list.forEach(function (task) { ul.appendChild(renderTask(task, mon, {})); });
+      if (!list.length) {
+        var hint = document.createElement("div");
+        hint.className = "empty-hint";
+        hint.textContent = isWknd ? "放不固定日期的事" : "暂无事项";
+        ul.appendChild(hint);
+      }
+      col.appendChild(ul);
+
+      var foot = document.createElement("div");
+      foot.className = "col-foot";
+      var input = document.createElement("input");
+      input.className = "add-input";
+      input.type = "text";
+      input.placeholder = "＋ 添加待办";
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          var text = input.value.trim();
+          if (!text) return;
+          var t = { id: uid(), date: key, order: nextOrder(key), text: text, done: false, pri: "low",
+            assignee: filterMember || "", note: "", subs: [], u: Date.now() };
+          doc.tasks[t.id] = t;
+          markDirty(); render();
+          var again = board.querySelector('.col[data-key="' + key + '"] .add-input');
+          if (again) again.focus();
+        }
+      });
+      foot.appendChild(input);
+      col.appendChild(foot);
+
+      bindDropZone(ul, col);
+      board.appendChild(col);
+    });
+  }
+
+  /* ═══ task card ═══ */
+  function renderTask(task, mon, opts) {
+    if (!task.pri) task.pri = "low";
+    var li = document.createElement("li");
+    var hasDetail = !!(task.note && task.note.trim()) || (task.subs && task.subs.length) || !!task.assignee;
+    li.className = "task" + (task.done ? " done" : "") + (hasDetail ? " has-detail" : "");
+    li.draggable = true;
+    li.dataset.id = task.id;
+    li.tabIndex = 0;
+
+    var main = document.createElement("div");
+    main.className = "task-main";
+
+    var check = document.createElement("input");
+    check.type = "checkbox";
+    check.className = "task-check";
+    check.checked = !!task.done;
+    check.addEventListener("change", function () { task.done = check.checked; touch(task); render(); });
+
+    var pri = document.createElement("button");
+    pri.className = "pri-dot pri-" + task.pri;
+    pri.title = "优先级：" + PRI_NAME[task.pri] + "（点击切换）";
+    pri.addEventListener("click", function () {
+      task.pri = task.pri === "low" ? "med" : task.pri === "med" ? "high" : "low";
+      touch(task); render();
+    });
+
+    var span = document.createElement("span");
+    span.className = "task-text";
+    span.textContent = task.text;
+    span.title = "双击编辑";
+    span.addEventListener("dblclick", function () { startEdit(span, task); });
+
+    var badges = document.createElement("div");
+    badges.className = "task-badges";
+    if (opts.dayChip) {
+      var b0 = document.createElement("span");
+      b0.className = "badge day-chip";
+      b0.textContent = opts.dayChip;
+      badges.appendChild(b0);
+    }
+    if (task.subs && task.subs.length) {
+      var b1 = document.createElement("span");
+      b1.className = "badge";
+      b1.textContent = task.subs.filter(function (s) { return s.done; }).length + "/" + task.subs.length;
+      badges.appendChild(b1);
+    } else if (task.note && task.note.trim()) {
+      var b2 = document.createElement("span");
+      b2.className = "badge";
+      b2.textContent = "📝";
+      badges.appendChild(b2);
+    }
+    var m = memberOf(task.assignee);
+    if (m) {
+      var av = document.createElement("span");
+      av.className = "avatar";
+      av.style.background = m.color || colorOf(task.assignee);
+      av.textContent = m.name.slice(0, 1);
+      av.title = "负责人：" + m.name;
+      badges.appendChild(av);
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "task-actions";
+    if (!opts.noExpand) {
+      var exp = document.createElement("button");
+      exp.className = "icon-btn expand" + (expandedId === task.id ? " open" : "");
+      exp.title = "负责人 / 备注 / 子任务";
+      exp.textContent = "▸";
+      exp.addEventListener("click", function () {
+        expandedId = expandedId === task.id ? null : task.id;
+        render();
+      });
+      actions.appendChild(exp);
+    }
+    var dup = document.createElement("button");
+    dup.className = "icon-btn";
+    dup.title = "复制一份";
+    dup.textContent = "⧉";
+    dup.addEventListener("click", function () {
+      var c = cloneTask(task);
+      doc.tasks[c.id] = c;
+      markDirty(); render();
+    });
+    var del = document.createElement("button");
+    del.className = "icon-btn del";
+    del.title = "删除";
+    del.textContent = "✕";
+    del.addEventListener("click", function () {
+      doc.tasks[task.id] = { id: task.id, del: 1, u: Date.now() };
+      if (expandedId === task.id) expandedId = null;
+      markDirty(); render();
+    });
+    actions.appendChild(dup);
+    actions.appendChild(del);
+
+    main.appendChild(check);
+    main.appendChild(pri);
+    main.appendChild(span);
+    main.appendChild(badges);
+    main.appendChild(actions);
+    li.appendChild(main);
+
+    if (!opts.noExpand && expandedId === task.id) li.appendChild(renderDetail(task));
+
+    li.addEventListener("dragstart", function (e) {
+      if (e.target.closest && e.target.closest(".task-detail")) { e.preventDefault(); return; }
+      drag = { id: task.id };
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "copyMove";
+      e.dataTransfer.setData("text/plain", task.text);
+    });
+    li.addEventListener("dragend", function () {
+      drag = null;
+      li.classList.remove("dragging");
+      removePlaceholder();
+      document.querySelectorAll(".drop-hover").forEach(function (c) { c.classList.remove("drop-hover"); });
+    });
+    return li;
+  }
+
+  /* ═══ detail panel ═══ */
+  function renderDetail(task) {
+    var box = document.createElement("div");
+    box.className = "task-detail";
+    box.addEventListener("mousedown", function (e) { e.stopPropagation(); });
+
+    var row = document.createElement("div");
+    row.className = "detail-row";
+    var lab = document.createElement("label");
+    lab.textContent = "负责人";
+    var sel = document.createElement("select");
+    sel.className = "assignee-select";
+    var opt0 = document.createElement("option");
+    opt0.value = "";
+    opt0.textContent = "未分配";
+    sel.appendChild(opt0);
+    Object.keys(doc.members).forEach(function (id) {
+      var mm = doc.members[id];
+      if (mm.del) return;
+      var o = document.createElement("option");
+      o.value = id;
+      o.textContent = mm.name + (id === myId() ? "（我）" : "");
+      sel.appendChild(o);
+    });
+    sel.value = task.assignee || "";
+    sel.addEventListener("change", function () { task.assignee = sel.value; touch(task); render(); });
+    row.appendChild(lab);
+    row.appendChild(sel);
+    if (myId() && task.assignee !== myId()) {
+      var mine = document.createElement("button");
+      mine.className = "btn ghost";
+      mine.style.padding = "2px 8px";
+      mine.style.fontSize = "12px";
+      mine.textContent = "分给我";
+      mine.addEventListener("click", function () { task.assignee = myId(); touch(task); render(); });
+      row.appendChild(mine);
+    }
+    box.appendChild(row);
+
+    var note = document.createElement("textarea");
+    note.className = "note-input";
+    note.placeholder = "备注…";
+    note.rows = 1;
+    note.value = task.note || "";
+    var grow = function () { note.style.height = "auto"; note.style.height = note.scrollHeight + "px"; };
+    note.addEventListener("input", function () { task.note = note.value; task.u = Date.now(); dirty = true; cacheDoc(); grow(); });
+    note.addEventListener("blur", function () { schedulePush(); render(); });
+    setTimeout(grow, 0);
+    box.appendChild(note);
+
+    var subsUl = document.createElement("ul");
+    subsUl.className = "subs";
+    (task.subs || []).forEach(function (sub) {
+      var li = document.createElement("li");
+      li.className = sub.done ? "done" : "";
+      var c = document.createElement("input");
+      c.type = "checkbox";
+      c.className = "task-check";
+      c.checked = !!sub.done;
+      c.addEventListener("change", function () { sub.done = c.checked; touch(task); render(); });
+      var t = document.createElement("span");
+      t.className = "sub-text";
+      t.textContent = sub.text;
+      var x = document.createElement("button");
+      x.className = "icon-btn del";
+      x.textContent = "✕";
+      x.addEventListener("click", function () {
+        task.subs.splice(task.subs.indexOf(sub), 1);
+        touch(task); render();
+      });
+      li.appendChild(c); li.appendChild(t); li.appendChild(x);
+      subsUl.appendChild(li);
+    });
+    box.appendChild(subsUl);
+
+    var add = document.createElement("input");
+    add.className = "sub-add";
+    add.type = "text";
+    add.placeholder = "＋ 子任务，回车添加";
+    add.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        var text = add.value.trim();
+        if (!text) return;
+        (task.subs || (task.subs = [])).push({ id: uid(), text: text, done: false });
+        focusSubOf = task.id;
+        touch(task); render();
+      }
+    });
+    box.appendChild(add);
+    if (focusSubOf === task.id) { setTimeout(function () { add.focus(); }, 0); focusSubOf = null; }
+    return box;
+  }
+
+  function startEdit(span, task) {
+    span.contentEditable = "true";
+    span.focus();
+    var range = document.createRange();
+    range.selectNodeContents(span);
+    var sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    span.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); span.blur(); }
+      if (e.key === "Escape") { span.textContent = task.text; span.blur(); }
+    });
+    span.addEventListener("blur", function () {
+      span.contentEditable = "false";
+      var text = span.textContent.trim();
+      if (text && text !== task.text) { task.text = text; touch(task); }
+      render();
+    }, { once: true });
+  }
+
+  /* ═══ drag & drop ═══ */
+  function getPlaceholder() {
+    if (!placeholder) {
+      placeholder = document.createElement("li");
+      placeholder.className = "placeholder";
+    }
+    return placeholder;
+  }
+  function removePlaceholder() {
+    if (placeholder && placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+  }
+  function moveDragged(toKey, index, copy) {
+    var task = doc.tasks[drag.id];
+    if (!task || task.del) { drag = null; render(); return; }
+    toKey = normalizeKey(toKey);
+    var list = tasksOf(toKey).filter(visible).filter(function (t) { return t.id !== task.id; });
+    var order;
+    if (index <= 0) order = list.length ? list[0].order - 10 : 10;
+    else if (index >= list.length) order = list.length ? list[list.length - 1].order + 10 : 10;
+    else order = (list[index - 1].order + list[index].order) / 2;
+    if (copy) {
+      var c = cloneTask(task, toKey);
+      c.order = order;
+      doc.tasks[c.id] = c;
+    } else {
+      task.date = toKey;
+      task.order = order;
+      task.u = Date.now();
+    }
+    drag = null;
+    markDirty(); render();
+  }
+
+  function bindDropZone(ul, col) {
+    var over = function (e) {
+      if (!drag) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = e.altKey ? "copy" : "move";
+      col.classList.add("drop-hover");
+      var ph = getPlaceholder();
+      var items = Array.prototype.slice.call(ul.querySelectorAll(":scope > .task:not(.dragging)"));
+      var after = null;
+      for (var i = 0; i < items.length; i++) {
+        var r = items[i].getBoundingClientRect();
+        if (e.clientY < r.top + r.height / 2) { after = items[i]; break; }
+      }
+      if (after) ul.insertBefore(ph, after);
+      else ul.appendChild(ph);
+    };
+    var leave = function (e) { if (!col.contains(e.relatedTarget)) col.classList.remove("drop-hover"); };
+    var dropHandler = function (e) {
+      if (!drag) return;
+      e.preventDefault();
+      col.classList.remove("drop-hover");
+      var ph = getPlaceholder();
+      var index = 0;
+      for (var i = 0; i < ul.children.length; i++) {
+        var child = ul.children[i];
+        if (child === ph) break;
+        if (child.classList && child.classList.contains("task") && !child.classList.contains("dragging")) index++;
+      }
+      removePlaceholder();
+      moveDragged(ul.dataset.key, index, e.altKey);
+    };
+    ul.addEventListener("dragover", over);
+    col.addEventListener("dragover", over);
+    col.addEventListener("dragleave", leave);
+    ul.addEventListener("drop", dropHandler);
+    col.addEventListener("drop", dropHandler);
+  }
+
+  /* ═══ quadrant view ═══ */
+  var QUADS = [
+    { cls: "q1", title: "重要 · 紧急", hint: "马上做 — 拖入 = 🔴 + 移到今天", important: true, urgent: true },
+    { cls: "q2", title: "重要 · 不紧急", hint: "计划做 — 拖入 = 🔴 + 排到之后", important: true, urgent: false },
+    { cls: "q3", title: "紧急 · 不重要", hint: "少花时间 — 拖入 = ⚪ + 移到今天", important: false, urgent: true },
+    { cls: "q4", title: "不重要 · 不紧急", hint: "有空再说 — 拖入 = ⚪ + 排到之后", important: false, urgent: false },
+  ];
+
+  function renderQuad(mon, keys) {
+    quadView.innerHTML = "";
+    QUADS.forEach(function (q) {
+      var box = document.createElement("div");
+      box.className = "quad " + q.cls;
+      var head = document.createElement("div");
+      head.className = "quad-head";
+      head.innerHTML = '<span class="quad-mark"></span><span class="quad-title">' + q.title + '</span><span class="quad-hint">' + q.hint + "</span>";
+      box.appendChild(head);
+
+      var ul = document.createElement("ul");
+      ul.className = "task-list";
+      var entries = [];
+      keys.forEach(function (key) {
+        tasksOf(key).filter(visible).forEach(function (task) {
+          if (!task.pri) task.pri = "low";
+          if (isImportant(task) === q.important && isUrgent(key) === q.urgent) entries.push({ task: task, key: key });
+        });
+      });
+      entries.sort(function (a, b) {
+        return (a.task.done - b.task.done) || (PRI_ORDER[a.task.pri] - PRI_ORDER[b.task.pri]) || a.key.localeCompare(b.key);
+      });
+      entries.forEach(function (en) {
+        ul.appendChild(renderTask(en.task, mon, { dayChip: dayLabelOf(en.key, keys[0]) + " " + fmtMD(en.key), noExpand: true }));
+      });
+      if (!entries.length) {
+        var hint = document.createElement("div");
+        hint.className = "empty-hint";
+        hint.textContent = "空";
+        ul.appendChild(hint);
+      }
+      box.appendChild(ul);
+
+      box.addEventListener("dragover", function (e) {
+        if (!drag) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        box.classList.add("drop-hover");
+      });
+      box.addEventListener("dragleave", function (e) { if (!box.contains(e.relatedTarget)) box.classList.remove("drop-hover"); });
+      box.addEventListener("drop", function (e) {
+        if (!drag) return;
+        e.preventDefault();
+        box.classList.remove("drop-hover");
+        applyQuadrant(q, keys);
+      });
+      quadView.appendChild(box);
+    });
+  }
+
+  function applyQuadrant(q, keys) {
+    var task = doc.tasks[drag.id];
+    if (!task || task.del) { drag = null; render(); return; }
+    if (q.important) { if (!isImportant(task)) task.pri = "high"; }
+    else task.pri = "low";
+    var targetKey = task.date;
+    if (q.urgent) {
+      if (!isUrgent(targetKey)) targetKey = todayKey();
+    } else if (isUrgent(targetKey)) {
+      var tomorrow = keyOf(addDays(new Date(), 1));
+      targetKey = tomorrow > keys[4] ? keys[5] : tomorrow;
+    }
+    targetKey = normalizeKey(targetKey);
+    if (targetKey !== task.date) { task.date = targetKey; task.order = nextOrder(targetKey); }
+    task.u = Date.now();
+    drag = null;
+    markDirty(); render();
+  }
+
+  /* ═══ report & export ═══ */
+  function priMark(t) { return t.pri === "high" ? " 🔴" : t.pri === "med" ? " 🟡" : ""; }
+
+  function buildTeamReport(mon, keys) {
+    var fri = addDays(mon, 4);
+    var byMember = {};   // memberId -> {done:[], todo:[]}
+    keys.forEach(function (key) {
+      tasksOf(key).forEach(function (t) {
+        var mid = t.assignee || "";
+        if (!byMember[mid]) byMember[mid] = { done: [], todo: [] };
+        var subs = t.subs || [];
+        var subNote = subs.length ? "（子任务 " + subs.filter(function (s) { return s.done; }).length + "/" + subs.length + "）" : "";
+        var line = "  · " + dayLabelOf(key, keys[0]) + " " + fmtMD(key) + "　" + t.text + priMark(t) + subNote;
+        (t.done ? byMember[mid].done : byMember[mid].todo).push(line);
+      });
+    });
+
+    var totalDone = 0, totalTodo = 0;
+    Object.values(byMember).forEach(function (g) { totalDone += g.done.length; totalTodo += g.todo.length; });
+
+    var out = "📋 团队周报 · " + mon.getFullYear() + "年" + (mon.getMonth() + 1) + "月" + mon.getDate() + "日 – " +
+      (fri.getMonth() + 1) + "月" + fri.getDate() + "日\n";
+    out += "团队「" + teamId + "」 · 共 " + (totalDone + totalTodo) + " 项，完成 " + totalDone + " 项，完成率 " +
+      (totalDone + totalTodo ? Math.round(totalDone * 100 / (totalDone + totalTodo)) : 0) + "%\n";
+
+    var mids = Object.keys(byMember).sort(function (a, b) {
+      if (a === "") return 1;
+      if (b === "") return -1;
+      return (memberOf(a) ? memberOf(a).name : a).localeCompare(memberOf(b) ? memberOf(b).name : b, "zh");
+    });
+    mids.forEach(function (mid) {
+      var g = byMember[mid];
+      var name = mid === "" ? "未分配" : (memberOf(mid) ? memberOf(mid).name : "（已离开成员）");
+      out += "\n────────────\n👤 " + name + "（完成 " + g.done.length + " / " + (g.done.length + g.todo.length) + "）\n";
+      out += "✅ 已完成\n" + (g.done.length ? g.done.join("\n") : "  （无）") + "\n";
+      out += "⏳ 未完成 / 顺延\n" + (g.todo.length ? g.todo.join("\n") : "  （无）") + "\n";
+    });
+    return out;
+  }
+
+  function buildWeekText(mon, keys) {
+    var out = "# 团队每周待办 " + (mon.getMonth() + 1) + "月" + mon.getDate() + "日那一周\n";
+    keys.forEach(function (key, i) {
+      var list = tasksOf(key);
+      if (!list.length) return;
+      out += "\n## " + (i === 5 ? "周末 · 机动" : DAYS[i].cn) + " " + fmtMD(key) + "\n";
+      list.forEach(function (t) {
+        var m = memberOf(t.assignee);
+        out += "- [" + (t.done ? "x" : " ") + "] " + t.text + priMark(t) + (m ? " @" + m.name : "") + "\n";
+        (t.subs || []).forEach(function (s) { out += "    - [" + (s.done ? "x" : " ") + "] " + s.text + "\n"; });
+        if (t.note && t.note.trim()) out += "    > " + t.note.trim().replace(/\n/g, "\n    > ") + "\n";
+      });
+    });
+    return out;
+  }
+
+  function copyToClipboard(text, okMsg) {
+    var ok = function () { toast(okMsg || "已复制"); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { fallbackCopy(text, ok); });
+    } else fallbackCopy(text, ok);
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败，请手动复制"); }
+    document.body.removeChild(ta);
+  }
+
+  /* ═══ modals ═══ */
+  function makeModal(title) {
+    var overlay = document.createElement("div");
+    overlay.className = "overlay";
+    var modal = document.createElement("div");
+    modal.className = "modal";
+    var head = document.createElement("div");
+    head.className = "modal-head";
+    var h = document.createElement("h2");
+    h.textContent = title;
+    var close = document.createElement("button");
+    close.className = "icon-btn";
+    close.textContent = "✕";
+    head.appendChild(h); head.appendChild(close);
+    var body = document.createElement("div");
+    body.className = "modal-body";
+    var foot = document.createElement("div");
+    foot.className = "modal-foot";
+    modal.appendChild(head); modal.appendChild(body); modal.appendChild(foot);
+    overlay.appendChild(modal);
+    var kill = function () { document.removeEventListener("keydown", esc); overlay.remove(); };
+    var esc = function (e) { if (e.key === "Escape") kill(); };
+    close.addEventListener("click", kill);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) kill(); });
+    document.addEventListener("keydown", esc);
+    document.body.appendChild(overlay);
+    return { body: body, foot: foot, kill: kill };
+  }
+
+  function showTextModal(title, text, copyMsg) {
+    var m = makeModal(title);
+    var ta = document.createElement("textarea");
+    ta.className = "report";
+    ta.value = text;
+    ta.readOnly = true;
+    m.body.appendChild(ta);
+    var copyBtn = document.createElement("button");
+    copyBtn.className = "btn primary";
+    copyBtn.textContent = "复制全文";
+    copyBtn.addEventListener("click", function () { copyToClipboard(ta.value, copyMsg); });
+    var closeBtn = document.createElement("button");
+    closeBtn.className = "btn";
+    closeBtn.textContent = "关闭";
+    closeBtn.addEventListener("click", m.kill);
+    m.foot.appendChild(copyBtn);
+    m.foot.appendChild(closeBtn);
+  }
+
+  function showSettings() {
+    var m = makeModal("设置");
+    var steps = document.createElement("div");
+    steps.className = "setup-steps";
+    steps.innerHTML =
+      "<b>怎么拿到团队 Token？</b>（团队管理员做一次，发给所有成员）<br>" +
+      "1. 打开 <a href='https://github.com/settings/personal-access-tokens/new' target='_blank' rel='noopener'>github.com/settings/personal-access-tokens/new</a><br>" +
+      "2. Repository access → <b>Only select repositories</b> → 选 <code>" + (OWNER.indexOf("__") === 0 ? "weekly-todo-data" : OWNER + "/weekly-todo-data") + "</code><br>" +
+      "3. Permissions → Repository permissions → <b>Contents = Read and write</b><br>" +
+      "4. Generate token，把 <code>github_pat_…</code> 私下发给团队成员<br>" +
+      "Token 只保存在你自己的浏览器里，不会出现在页面代码中。";
+    m.body.appendChild(steps);
+
+    var f1 = document.createElement("div");
+    f1.className = "field";
+    f1.innerHTML = "<label>你的名字（显示在任务负责人上）</label>";
+    var nameIn = document.createElement("input");
+    nameIn.value = cfg.name || "";
+    nameIn.placeholder = "例如：Sara";
+    f1.appendChild(nameIn);
+    m.body.appendChild(f1);
+
+    var f2 = document.createElement("div");
+    f2.className = "field";
+    f2.innerHTML = "<label>团队 Token（github_pat_…）</label>";
+    var tokIn = document.createElement("input");
+    tokIn.type = "password";
+    tokIn.value = cfg.token || "";
+    tokIn.placeholder = "github_pat_xxxxxxxx";
+    f2.appendChild(tokIn);
+    var noteEl = document.createElement("div");
+    noteEl.className = "note";
+    noteEl.textContent = "仅保存在本机浏览器 localStorage，用于读写团队数据仓库。";
+    f2.appendChild(noteEl);
+    m.body.appendChild(f2);
+
+    var saveBtn = document.createElement("button");
+    saveBtn.className = "btn primary";
+    saveBtn.textContent = "保存";
+    saveBtn.addEventListener("click", function () {
+      var name = nameIn.value.trim();
+      var token = tokIn.value.trim();
+      if (!name) { toast("请填写名字"); return; }
+      if (!token) { toast("请填写团队 Token"); return; }
+      cfg.name = name;
+      cfg.token = token;
+      if (!cfg.memberId) cfg.memberId = "m" + Math.random().toString(36).slice(2, 8);
+      saveCfg();
+      var me = doc.members[cfg.memberId] || {};
+      doc.members[cfg.memberId] = { name: name, color: me.color || colorOf(cfg.memberId), u: Date.now() };
+      markDirty();
+      m.kill();
+      render();
+      startPolling();
+      toast("已保存，开始同步");
+    });
+    var cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn";
+    cancelBtn.textContent = "取消";
+    cancelBtn.addEventListener("click", m.kill);
+    m.foot.appendChild(saveBtn);
+    m.foot.appendChild(cancelBtn);
+  }
+
+  function showInvite() {
+    var link = location.origin + location.pathname + "#team=" + teamId;
+    showTextModal("邀请成员",
+      "① 把这个链接发给同事：\n" + link + "\n\n" +
+      "② 私下把团队 Token（github_pat_…）发给他们（别贴在公开的地方）。\n\n" +
+      "③ 对方打开链接 → 右上角 ⚙ 设置 → 填名字 + Token → 开始协作。\n\n" +
+      "提示：不同团队可以用不同空间，把链接结尾改成 #team=其他名字 即可（首次打开时点「创建团队空间」）。",
+      "邀请说明已复制");
+  }
+
+  /* ═══ toolbar wiring ═══ */
+  document.getElementById("prevWeek").addEventListener("click", function () { weekOffset--; render(); });
+  document.getElementById("nextWeek").addEventListener("click", function () { weekOffset++; render(); });
+  document.getElementById("thisWeek").addEventListener("click", function () { weekOffset = 0; render(); });
+
+  var viewWeekBtn = document.getElementById("viewWeek");
+  var viewQuadBtn = document.getElementById("viewQuad");
+  viewWeekBtn.addEventListener("click", function () {
+    view = "week"; viewWeekBtn.classList.add("active"); viewQuadBtn.classList.remove("active"); render();
+  });
+  viewQuadBtn.addEventListener("click", function () {
+    view = "quad"; viewQuadBtn.classList.add("active"); viewWeekBtn.classList.remove("active"); render();
+  });
+
+  document.getElementById("reportBtn").addEventListener("click", function () {
+    var mon = mondayOf(weekOffset);
+    showTextModal("团队周报预览", buildTeamReport(mon, weekKeys(mon)), "团队周报已复制");
+  });
+  document.getElementById("settingsBtn").addEventListener("click", showSettings);
+
+  var exportMenu = document.getElementById("exportMenu");
+  document.addEventListener("click", function (e) {
+    if (exportMenu.open && !exportMenu.contains(e.target)) exportMenu.open = false;
+  });
+  document.getElementById("copyText").addEventListener("click", function () {
+    exportMenu.open = false;
+    var mon = mondayOf(weekOffset);
+    copyToClipboard(buildWeekText(mon, weekKeys(mon)), "本周内容已复制");
+  });
+  document.getElementById("expJson").addEventListener("click", function () {
+    exportMenu.open = false;
+    var blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "team-todo-" + teamId + "-" + todayKey() + ".json";
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    toast("备份已下载");
+  });
+  document.getElementById("clearDone").addEventListener("click", function () {
+    exportMenu.open = false;
+    var keys = weekKeys(mondayOf(weekOffset));
+    var n = 0;
+    keys.forEach(function (k) {
+      tasksOf(k).forEach(function (t) {
+        if (t.done) { doc.tasks[t.id] = { id: t.id, del: 1, u: Date.now() }; n++; }
+      });
+    });
+    if (n) { markDirty(); render(); }
+    toast(n ? "已清除 " + n + " 项完成任务" : "本周没有已完成任务");
+  });
+  document.getElementById("inviteBtn").addEventListener("click", function () {
+    exportMenu.open = false;
+    showInvite();
+  });
+
+  window.addEventListener("hashchange", function () { location.reload(); });
+
+  /* ═══ boot ═══ */
+  render();
+  if (cfg.token) startPolling();
+  else setPill("", "待设置");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每周待办 Weekly To-Do</title>
+</head>
+<body>
+<style>
+  :root {
+    --bg: #F6F5F1;
+    --surface: #FFFFFF;
+    --surface-2: #EFEEE7;
+    --ink: #24282B;
+    --ink-2: #7A7F84;
+    --ink-3: #A8ACB0;
+    --line: #E3E1D8;
+    --accent: #2E7D5B;
+    --accent-ink: #24634A;
+    --accent-soft: #E4F0E9;
+    --danger: #B4433A;
+    --pri-high: #C74A40;
+    --pri-med: #D19C2F;
+    --shadow: 0 1px 2px rgba(40, 42, 38, .05), 0 4px 14px rgba(40, 42, 38, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181B; --surface: #1E2125; --surface-2: #24282D;
+      --ink: #E8E6DF; --ink-2: #9BA0A5; --ink-3: #6B7076; --line: #2E3338;
+      --accent: #5FBB90; --accent-ink: #7BCCA4; --accent-soft: #1E3A2D;
+      --danger: #D97C72; --pri-high: #E07A70; --pri-med: #DBB25E;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F6F5F1; --surface: #FFFFFF; --surface-2: #EFEEE7;
+    --ink: #24282B; --ink-2: #7A7F84; --ink-3: #A8ACB0; --line: #E3E1D8;
+    --accent: #2E7D5B; --accent-ink: #24634A; --accent-soft: #E4F0E9;
+    --danger: #B4433A; --pri-high: #C74A40; --pri-med: #D19C2F;
+    --shadow: 0 1px 2px rgba(40,42,38,.05), 0 4px 14px rgba(40,42,38,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #16181B; --surface: #1E2125; --surface-2: #24282D;
+    --ink: #E8E6DF; --ink-2: #9BA0A5; --ink-3: #6B7076; --line: #2E3338;
+    --accent: #5FBB90; --accent-ink: #7BCCA4; --accent-soft: #1E3A2D;
+    --danger: #D97C72; --pri-high: #E07A70; --pri-med: #DBB25E;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.25);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 1360px; margin: 0 auto; padding: 26px 24px 56px; }
+
+  /* ── header ─────────────────────────────── */
+  header.top {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .title-block .eyebrow {
+    font-size: 11px; letter-spacing: .18em; color: var(--accent-ink);
+    text-transform: uppercase; font-weight: 600; margin-bottom: 4px;
+  }
+  h1.week-title {
+    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-size: 30px; font-weight: 600; margin: 0;
+    letter-spacing: .01em; text-wrap: balance;
+    font-variant-numeric: tabular-nums;
+  }
+  .week-sub { color: var(--ink-2); margin-top: 4px; font-size: 13px; }
+
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn {
+    appearance: none; border: 1px solid var(--line); background: var(--surface);
+    color: var(--ink); border-radius: 8px; padding: 7px 13px; font-size: 13px;
+    cursor: pointer; font-family: inherit; transition: background .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn:focus-visible, .task:focus-visible, .add-input:focus-visible, .seg button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .btn.today-btn { color: var(--accent-ink); border-color: var(--accent); font-weight: 500; }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+  .btn.ghost:hover { color: var(--danger); background: transparent; }
+
+  .seg {
+    display: inline-flex; border: 1px solid var(--line); border-radius: 8px;
+    overflow: hidden; background: var(--surface);
+  }
+  .seg button {
+    appearance: none; border: none; background: transparent; color: var(--ink-2);
+    padding: 7px 13px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
+  .seg button.active { background: var(--accent); color: #fff; }
+  :root[data-theme="dark"] .seg button.active { color: #10281C; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button.active { color: #10281C; } }
+
+  details.menu { position: relative; }
+  details.menu > summary {
+    list-style: none; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 8px; padding: 7px 13px; font-size: 13px; white-space: nowrap;
+  }
+  details.menu > summary::-webkit-details-marker { display: none; }
+  details.menu > summary:hover { background: var(--surface-2); }
+  details.menu[open] > summary { border-color: var(--accent); }
+  .menu-pop {
+    position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 6px; min-width: 190px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .menu-pop button {
+    appearance: none; border: none; background: transparent; color: var(--ink);
+    text-align: left; padding: 8px 10px; border-radius: 7px; font-size: 13px;
+    cursor: pointer; font-family: inherit;
+  }
+  .menu-pop button:hover { background: var(--surface-2); }
+  .menu-pop .menu-note { font-size: 11px; color: var(--ink-3); padding: 2px 10px 6px; }
+
+  /* ── rollover banner ─────────────────────── */
+  .banner {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    background: var(--accent-soft); border: 1px solid var(--accent);
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+    font-size: 13px; color: var(--ink);
+  }
+  .banner .btn { padding: 5px 11px; font-size: 12px; }
+  .banner b { color: var(--accent-ink); }
+
+  /* ── board (week view) ───────────────────── */
+  .board-scroll { overflow-x: auto; padding-bottom: 8px; }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(206px, 1fr)) minmax(206px, 1fr);
+    gap: 13px;
+    align-items: start;
+    min-width: 1240px;
+  }
+  .board.wknd-collapsed { grid-template-columns: repeat(5, minmax(206px, 1fr)) 46px; min-width: 1090px; }
+  @media (max-width: 900px) {
+    .board, .board.wknd-collapsed { grid-template-columns: 1fr; min-width: 0; }
+    .board-scroll { overflow-x: visible; }
+    .col.wknd-strip { min-height: 0 !important; }
+    .col.wknd-strip .strip-label { writing-mode: horizontal-tb !important; padding: 10px !important; }
+  }
+
+  .col {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    min-height: 240px;
+  }
+  .col.is-today { border-color: var(--accent); }
+  .col.is-wknd { background: color-mix(in srgb, var(--surface-2) 45%, var(--surface)); }
+  .col.drop-hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface)); }
+
+  .col.wknd-strip {
+    min-height: 240px; cursor: pointer; align-items: center; justify-content: flex-start;
+    background: color-mix(in srgb, var(--surface-2) 45%, var(--surface));
+  }
+  .col.wknd-strip:hover { border-color: var(--accent); }
+  .col.wknd-strip .strip-label {
+    writing-mode: vertical-rl; letter-spacing: .25em; font-size: 12px;
+    color: var(--ink-2); padding: 16px 0; user-select: none; white-space: nowrap;
+  }
+  .col.wknd-strip .strip-count {
+    background: var(--accent); color: #fff; font-size: 10px; font-weight: 600;
+    border-radius: 99px; padding: 1px 6px; margin-top: 6px;
+  }
+
+  .col-head {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 13px 14px 9px;
+    border-bottom: 1px solid var(--line);
+  }
+  .day-name { font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .day-en { font-size: 10px; letter-spacing: .16em; color: var(--ink-3); font-weight: 600; }
+  .day-date { margin-left: auto; color: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .today-chip {
+    background: var(--accent); color: #fff; font-size: 10px; font-weight: 600;
+    padding: 1px 7px; border-radius: 99px; letter-spacing: .05em;
+  }
+  :root[data-theme="dark"] .today-chip { color: #10281C; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .today-chip { color: #10281C; } }
+  .col-count { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .collapse-btn {
+    appearance: none; border: none; background: transparent; color: var(--ink-3);
+    cursor: pointer; font-size: 12px; padding: 0 2px; align-self: center;
+  }
+  .collapse-btn:hover { color: var(--ink); }
+
+  .task-list { list-style: none; margin: 0; padding: 8px 8px 2px; flex: 1; min-height: 60px; }
+
+  /* ── task card ───────────────────────────── */
+  .task {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    cursor: grab;
+    position: relative;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .task:hover { border-color: var(--ink-3); box-shadow: var(--shadow); }
+  .task.dragging { opacity: .35; cursor: grabbing; }
+  .task.done .task-text { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-3); }
+
+  .task-main { display: flex; align-items: flex-start; gap: 7px; padding: 8px 8px 8px 9px; }
+
+  .task-check {
+    appearance: none; width: 16px; height: 16px; margin: 2px 0 0;
+    border: 1.5px solid var(--ink-3); border-radius: 5px; cursor: pointer;
+    flex: none; position: relative; background: transparent;
+    transition: background .12s, border-color .12s;
+  }
+  .task-check:checked { background: var(--accent); border-color: var(--accent); }
+  .task-check:checked::after {
+    content: ""; position: absolute; left: 4.2px; top: 1.2px;
+    width: 4px; height: 8px;
+    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+
+  .pri-dot {
+    appearance: none; border: none; background: transparent; padding: 0;
+    width: 14px; height: 14px; margin-top: 3.5px; flex: none; cursor: pointer;
+    border-radius: 50%; position: relative;
+  }
+  .pri-dot::after {
+    content: ""; position: absolute; inset: 2px; border-radius: 50%;
+    border: 1.5px solid var(--ink-3); background: transparent;
+    transition: background .12s, border-color .12s;
+  }
+  .pri-dot.pri-med::after { background: var(--pri-med); border-color: var(--pri-med); }
+  .pri-dot.pri-high::after { background: var(--pri-high); border-color: var(--pri-high); }
+  .pri-dot:hover::after { transform: scale(1.15); }
+
+  .task-text { flex: 1; word-break: break-word; min-width: 0; padding: 1px 0; border-radius: 4px; }
+  .task-text[contenteditable="true"] {
+    outline: 2px solid var(--accent); outline-offset: 2px; cursor: text; background: var(--surface);
+  }
+
+  .task-badges { display: flex; gap: 4px; flex: none; align-items: center; margin-top: 2px; }
+  .badge {
+    font-size: 10px; color: var(--ink-2); background: var(--surface-2);
+    border-radius: 5px; padding: 1px 5px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .badge.day-chip { color: var(--accent-ink); background: var(--accent-soft); }
+
+  .task-actions { display: flex; gap: 1px; flex: none; opacity: 0; transition: opacity .12s; }
+  .task:hover .task-actions, .task:focus-within .task-actions { opacity: 1; }
+  .icon-btn {
+    appearance: none; border: none; background: transparent; color: var(--ink-3);
+    width: 21px; height: 21px; border-radius: 6px; cursor: pointer;
+    font-size: 12px; line-height: 1; display: grid; place-items: center; padding: 0;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .icon-btn.del:hover { color: var(--danger); }
+  .icon-btn.expand { transition: transform .15s; }
+  .icon-btn.expand.open { transform: rotate(90deg); }
+  .task.has-detail .task-actions { opacity: 1; }
+
+  /* ── task detail (note + subtasks) ───────── */
+  .task-detail { border-top: 1px dashed var(--line); padding: 8px 9px 9px 32px; cursor: default; }
+  .note-input {
+    width: 100%; border: none; background: transparent; resize: none;
+    font: inherit; font-size: 12.5px; color: var(--ink-2); padding: 0;
+    line-height: 1.5; min-height: 20px;
+  }
+  .note-input:focus { outline: none; color: var(--ink); }
+  .note-input::placeholder { color: var(--ink-3); }
+  .subs { list-style: none; margin: 6px 0 0; padding: 0; }
+  .subs li { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .subs .task-check { width: 13px; height: 13px; margin: 0; border-radius: 4px; }
+  .subs .task-check:checked::after { left: 3.2px; top: 0.4px; width: 3.5px; height: 7px; }
+  .sub-text { flex: 1; font-size: 12.5px; min-width: 0; word-break: break-word; }
+  .subs li.done .sub-text { color: var(--ink-3); text-decoration: line-through; }
+  .subs .icon-btn { opacity: 0; }
+  .subs li:hover .icon-btn { opacity: 1; }
+  .sub-add {
+    width: 100%; border: none; background: transparent; font: inherit; font-size: 12.5px;
+    color: var(--ink); padding: 3px 0 0; margin-top: 2px;
+  }
+  .sub-add::placeholder { color: var(--ink-3); }
+  .sub-add:focus { outline: none; }
+
+  .placeholder {
+    height: 36px; border: 1.5px dashed var(--accent); border-radius: 8px;
+    background: var(--accent-soft); margin-bottom: 6px; list-style: none;
+  }
+  .empty-hint { color: var(--ink-3); font-size: 12px; text-align: center; padding: 18px 0 8px; user-select: none; }
+
+  .col-foot { padding: 4px 8px 10px; }
+  .add-input {
+    width: 100%; border: 1px dashed var(--line); background: transparent;
+    border-radius: 8px; padding: 8px 10px; font: inherit; color: var(--ink);
+  }
+  .add-input::placeholder { color: var(--ink-3); }
+  .add-input:focus { border-style: solid; border-color: var(--accent); outline: none; background: var(--surface); }
+
+  /* ── quadrant view ───────────────────────── */
+  .quad-grid {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 13px; min-height: 62vh;
+  }
+  @media (max-width: 760px) { .quad-grid { grid-template-columns: 1fr; grid-template-rows: none; min-height: 0; } }
+  .quad {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 200px;
+  }
+  .quad.drop-hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface)); }
+  .quad-head { padding: 12px 14px 8px; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; gap: 8px; }
+  .quad-title { font-weight: 600; font-size: 14px; }
+  .quad-hint { font-size: 11px; color: var(--ink-3); margin-left: auto; text-align: right; }
+  .quad-mark { width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; }
+  .q1 .quad-mark { background: var(--pri-high); }
+  .q2 .quad-mark { background: var(--accent); }
+  .q3 .quad-mark { background: var(--pri-med); }
+  .q4 .quad-mark { background: var(--ink-3); }
+
+  /* ── modal ───────────────────────────────── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(20, 22, 20, .45);
+    display: grid; place-items: center; z-index: 100; padding: 20px;
+  }
+  .modal {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); width: min(680px, 100%); max-height: 84vh;
+    display: flex; flex-direction: column;
+  }
+  .modal-head { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .modal-head h2 { margin: 0; font-size: 16px; font-family: Georgia, "Songti SC", serif; }
+  .modal-head .icon-btn { margin-left: auto; width: 26px; height: 26px; font-size: 14px; }
+  .modal-body { padding: 14px 18px; overflow: auto; }
+  .modal-body textarea {
+    width: 100%; min-height: 340px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--bg); color: var(--ink); font: 12.5px/1.7 ui-monospace, "SF Mono", Menlo, monospace;
+    padding: 12px; resize: vertical;
+  }
+  .modal-foot { padding: 12px 18px 16px; display: flex; gap: 8px; justify-content: flex-end; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+  :root[data-theme="dark"] .btn.primary { color: #10281C; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #10281C; } }
+  .btn.primary:hover { filter: brightness(1.06); background: var(--accent); }
+
+  footer.hint { margin-top: 20px; color: var(--ink-3); font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  footer.hint span::before { content: "· "; color: var(--accent); }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg); font-size: 13px; padding: 9px 18px;
+    border-radius: 99px; z-index: 200; box-shadow: var(--shadow); opacity: 0;
+    transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="title-block">
+      <div class="eyebrow">Weekly To-Do</div>
+      <h1 class="week-title" id="weekTitle"></h1>
+      <div class="week-sub" id="weekSub"></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="prevWeek" title="上一周">← 上周</button>
+      <button class="btn today-btn" id="thisWeek">本周</button>
+      <button class="btn" id="nextWeek" title="下一周">下周 →</button>
+      <span class="seg" role="tablist">
+        <button id="viewWeek" class="active">周视图</button>
+        <button id="viewQuad">四象限</button>
+      </span>
+      <button class="btn" id="reportBtn">生成周报</button>
+      <details class="menu" id="exportMenu">
+        <summary>导出 ▾</summary>
+        <div class="menu-pop">
+          <button id="expJson">下载 JSON 备份</button>
+          <button id="impJson">导入 JSON（覆盖当前数据）</button>
+          <button id="copyText">复制本周为文字</button>
+          <div class="menu-note">备份可换设备后导入恢复</div>
+        </div>
+      </details>
+      <button class="btn ghost" id="clearDone" title="删除本周所有已完成事项">清除已完成</button>
+    </div>
+  </header>
+
+  <div id="bannerHost"></div>
+
+  <div class="board-scroll" id="weekView">
+    <div class="board" id="board"></div>
+  </div>
+  <div class="quad-grid" id="quadView" style="display:none"></div>
+
+  <footer class="hint">
+    <span>回车添加待办</span>
+    <span>拖拽移动 · 按住 ⌥ 拖拽复制</span>
+    <span>点圆点切换优先级 ⚪→🟡→🔴</span>
+    <span>点 ▸ 展开备注 / 子任务</span>
+    <span>双击文字编辑</span>
+    <span>数据保存在本机浏览器</span>
+    <span><a href="team.html" style="color:inherit">团队协作版 →</a></span>
+  </footer>
+</div>
+
+<input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const STORE_KEY = "weekly-todo-v1";
+  const DAYS = [
+    { cn: "周一", en: "MON" }, { cn: "周二", en: "TUE" }, { cn: "周三", en: "WED" },
+    { cn: "周四", en: "THU" }, { cn: "周五", en: "FRI" },
+  ];
+  const PRI_ORDER = { high: 0, med: 1, low: 2 };
+  const PRI_NAME = { high: "高", med: "中", low: "低" };
+
+  let store = load();
+  let weekOffset = 0;
+  let view = "week"; // week | quad
+  let drag = null;
+  let placeholder = null;
+  let expandedId = null;
+  let focusSubOf = null;
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function meta() { return store._meta || (store._meta = {}); }
+  function isDateKey(k) { return /^\d{4}-\d{2}-\d{2}$/.test(k); }
+  function save() {
+    const clean = {};
+    for (const k of Object.keys(store)) {
+      if (k === "_meta") { clean[k] = store[k]; continue; }
+      if (isDateKey(k) && Array.isArray(store[k]) && store[k].length) clean[k] = store[k];
+    }
+    localStorage.setItem(STORE_KEY, JSON.stringify(clean));
+  }
+  function uid() { return "t" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+
+  function mondayOf(offset) {
+    const now = new Date();
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + offset * 7);
+    return d;
+  }
+  function addDays(date, n) { const d = new Date(date); d.setDate(d.getDate() + n); return d; }
+  function keyOf(date) {
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return date.getFullYear() + "-" + m + "-" + dd;
+  }
+  function todayKey() { return keyOf(new Date()); }
+  function tasksOf(key) { return store[key] || (store[key] = []); }
+  function normalizeKey(key) {
+    // Sunday-dated keys are not displayed anywhere; fold them into the Saturday (weekend) slot
+    const d = new Date(key + "T00:00:00");
+    if (d.getDay() === 0) return keyOf(addDays(d, -1));
+    return key;
+  }
+  function fmtMD(key) { const p = key.split("-"); return (+p[1]) + "/" + (+p[2]); }
+  function dayLabelOf(key, mondayKey) {
+    const diff = Math.round((new Date(key + "T00:00:00") - new Date(mondayKey + "T00:00:00")) / 86400000);
+    if (diff >= 0 && diff < 5) return DAYS[diff].cn;
+    if (diff === 5 || diff === 6) return "周末";
+    return fmtMD(key);
+  }
+  function weekKeys(mon) {
+    const keys = [];
+    for (let i = 0; i < 5; i++) keys.push(keyOf(addDays(mon, i)));
+    keys.push(keyOf(addDays(mon, 5))); // Saturday = weekend/flex slot
+    return keys;
+  }
+  function isImportant(t) { return t.pri === "high" || t.pri === "med"; }
+  function isUrgent(key) { return key <= todayKey(); }
+
+  /* ── toast ── */
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  /* ── render root ── */
+  const board = document.getElementById("board");
+  const quadView = document.getElementById("quadView");
+  const weekView = document.getElementById("weekView");
+
+  function render() {
+    const mon = mondayOf(weekOffset);
+    const keys = weekKeys(mon);
+    const fri = addDays(mon, 4);
+
+    const sameMonth = mon.getMonth() === fri.getMonth();
+    document.getElementById("weekTitle").textContent =
+      (mon.getMonth() + 1) + "月" + mon.getDate() + "日 – " +
+      (sameMonth ? "" : (fri.getMonth() + 1) + "月") + fri.getDate() + "日";
+
+    let total = 0, done = 0;
+    keys.forEach(k => { const a = tasksOf(k); total += a.length; done += a.filter(t => t.done).length; });
+    document.getElementById("weekSub").textContent =
+      mon.getFullYear() + " 年 · " + (weekOffset === 0 ? "本周" : weekOffset > 0 ? weekOffset + " 周后" : (-weekOffset) + " 周前") +
+      " · 完成 " + done + " / " + total;
+
+    renderBanner();
+    if (view === "week") { weekView.style.display = ""; quadView.style.display = "none"; renderWeek(mon, keys); }
+    else { weekView.style.display = "none"; quadView.style.display = ""; renderQuad(mon, keys); }
+  }
+
+  /* ── rollover banner ── */
+  function renderBanner() {
+    const host = document.getElementById("bannerHost");
+    host.innerHTML = "";
+    const monKey = keyOf(mondayOf(0));
+    if (meta().rolloverDismissed === todayKey()) return;
+
+    let pending = 0;
+    for (const k of Object.keys(store)) {
+      if (!isDateKey(k) || k >= monKey) continue;
+      pending += tasksOf(k).filter(t => !t.done).length;
+    }
+    if (!pending) return;
+
+    const div = document.createElement("div");
+    div.className = "banner";
+    div.innerHTML = "⏳ 之前有 <b>" + pending + "</b> 项未完成待办，要移到今天吗？";
+    const moveBtn = document.createElement("button");
+    moveBtn.className = "btn";
+    moveBtn.textContent = "移到今天";
+    moveBtn.addEventListener("click", () => {
+      let target = new Date();
+      if (target.getDay() === 6) target = addDays(target, 2);
+      if (target.getDay() === 0) target = addDays(target, 1);
+      const tKey = keyOf(target);
+      for (const k of Object.keys(store)) {
+        if (!isDateKey(k) || k >= monKey) continue;
+        const undone = tasksOf(k).filter(t => !t.done);
+        if (!undone.length) continue;
+        store[k] = tasksOf(k).filter(t => t.done);
+        tasksOf(tKey).push(...undone);
+      }
+      save(); render();
+      toast("已顺延 " + pending + " 项到今天");
+    });
+    const dismissBtn = document.createElement("button");
+    dismissBtn.className = "btn ghost";
+    dismissBtn.textContent = "今天不再提醒";
+    dismissBtn.addEventListener("click", () => { meta().rolloverDismissed = todayKey(); save(); render(); });
+    div.appendChild(moveBtn);
+    div.appendChild(dismissBtn);
+    host.appendChild(div);
+  }
+
+  /* ── week view ── */
+  function renderWeek(mon, keys) {
+    board.innerHTML = "";
+    const tKey = todayKey();
+    const collapsed = meta().weekendCollapsed !== false; // default collapsed
+    board.classList.toggle("wknd-collapsed", collapsed);
+
+    keys.forEach((key, i) => {
+      const isWknd = i === 5;
+      const list = tasksOf(key);
+
+      if (isWknd && collapsed) {
+        const strip = document.createElement("div");
+        strip.className = "col wknd-strip";
+        strip.title = "展开周末 / 机动栏";
+        const label = document.createElement("div");
+        label.className = "strip-label";
+        label.textContent = "周末 · 机动";
+        strip.appendChild(label);
+        const undone = list.filter(t => !t.done).length;
+        if (undone) {
+          const c = document.createElement("span");
+          c.className = "strip-count";
+          c.textContent = undone;
+          strip.appendChild(c);
+        }
+        strip.addEventListener("click", () => { meta().weekendCollapsed = false; save(); render(); });
+        // allow dropping onto the collapsed strip
+        strip.addEventListener("dragover", e => {
+          if (!drag) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = e.altKey ? "copy" : "move";
+          strip.classList.add("drop-hover");
+        });
+        strip.addEventListener("dragleave", () => strip.classList.remove("drop-hover"));
+        strip.addEventListener("drop", e => {
+          if (!drag) return;
+          e.preventDefault();
+          moveDragged(key, tasksOf(key).length, e.altKey);
+        });
+        board.appendChild(strip);
+        return;
+      }
+
+      const isToday = key === tKey;
+      const col = document.createElement("div");
+      col.className = "col" + (isToday ? " is-today" : "") + (isWknd ? " is-wknd" : "");
+      col.dataset.key = key;
+
+      const head = document.createElement("div");
+      head.className = "col-head";
+      const doneN = list.filter(t => t.done).length;
+      const date = addDays(mon, i);
+      head.innerHTML = isWknd
+        ? '<span class="day-name">周末 · 机动</span><span class="day-en">SAT–SUN</span>' +
+          '<span class="day-date">' + (list.length ? '<span class="col-count">' + doneN + "/" + list.length + "</span>" : "") + "</span>"
+        : '<span class="day-name">' + DAYS[i].cn + "</span>" +
+          '<span class="day-en">' + DAYS[i].en + "</span>" +
+          (isToday ? '<span class="today-chip">今天</span>' : "") +
+          '<span class="day-date">' + (date.getMonth() + 1) + "/" + date.getDate() +
+          (list.length ? ' <span class="col-count">' + doneN + "/" + list.length + "</span>" : "") + "</span>";
+      if (isWknd) {
+        const cb = document.createElement("button");
+        cb.className = "collapse-btn";
+        cb.title = "折叠";
+        cb.textContent = "⇥";
+        cb.addEventListener("click", () => { meta().weekendCollapsed = true; save(); render(); });
+        head.appendChild(cb);
+      }
+      col.appendChild(head);
+
+      const ul = document.createElement("ul");
+      ul.className = "task-list";
+      ul.dataset.key = key;
+      list.forEach(task => ul.appendChild(renderTask(task, key, mon)));
+      if (!list.length) {
+        const hint = document.createElement("div");
+        hint.className = "empty-hint";
+        hint.textContent = isWknd ? "放不固定日期的事" : "暂无事项";
+        ul.appendChild(hint);
+      }
+      col.appendChild(ul);
+
+      const foot = document.createElement("div");
+      foot.className = "col-foot";
+      const input = document.createElement("input");
+      input.className = "add-input";
+      input.type = "text";
+      input.placeholder = "＋ 添加待办";
+      input.setAttribute("aria-label", (isWknd ? "周末" : DAYS[i].cn) + " 添加待办");
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          const text = input.value.trim();
+          if (!text) return;
+          tasksOf(key).push({ id: uid(), text: text, done: false, pri: "low" });
+          save(); render();
+          const again = board.querySelector('.col[data-key="' + key + '"] .add-input');
+          if (again) again.focus();
+        }
+      });
+      foot.appendChild(input);
+      col.appendChild(foot);
+
+      bindDropZone(ul, col);
+      board.appendChild(col);
+    });
+  }
+
+  /* ── task card ── */
+  function renderTask(task, key, mon, opts) {
+    opts = opts || {};
+    if (!task.pri) task.pri = "low";
+    const li = document.createElement("li");
+    const hasDetail = !!(task.note && task.note.trim()) || (task.subs && task.subs.length);
+    li.className = "task" + (task.done ? " done" : "") + (hasDetail ? " has-detail" : "");
+    li.draggable = true;
+    li.dataset.id = task.id;
+    li.tabIndex = 0;
+
+    const main = document.createElement("div");
+    main.className = "task-main";
+
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.className = "task-check";
+    check.checked = task.done;
+    check.setAttribute("aria-label", "完成");
+    check.addEventListener("change", () => { task.done = check.checked; save(); render(); });
+
+    const pri = document.createElement("button");
+    pri.className = "pri-dot pri-" + task.pri;
+    pri.title = "优先级：" + PRI_NAME[task.pri] + "（点击切换）";
+    pri.setAttribute("aria-label", "优先级 " + PRI_NAME[task.pri]);
+    pri.addEventListener("click", () => {
+      task.pri = task.pri === "low" ? "med" : task.pri === "med" ? "high" : "low";
+      save(); render();
+    });
+
+    const span = document.createElement("span");
+    span.className = "task-text";
+    span.textContent = task.text;
+    span.title = "双击编辑";
+    span.addEventListener("dblclick", () => startEdit(span, task));
+
+    const badges = document.createElement("div");
+    badges.className = "task-badges";
+    if (opts.dayChip) {
+      const b = document.createElement("span");
+      b.className = "badge day-chip";
+      b.textContent = opts.dayChip;
+      badges.appendChild(b);
+    }
+    if (task.subs && task.subs.length) {
+      const b = document.createElement("span");
+      b.className = "badge";
+      b.textContent = task.subs.filter(s => s.done).length + "/" + task.subs.length;
+      badges.appendChild(b);
+    }
+    if (task.note && task.note.trim() && !(task.subs && task.subs.length)) {
+      const b = document.createElement("span");
+      b.className = "badge";
+      b.textContent = "📝";
+      badges.appendChild(b);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "task-actions";
+
+    if (!opts.noExpand) {
+      const exp = document.createElement("button");
+      exp.className = "icon-btn expand" + (expandedId === task.id ? " open" : "");
+      exp.title = "备注 / 子任务";
+      exp.textContent = "▸";
+      exp.addEventListener("click", () => {
+        expandedId = expandedId === task.id ? null : task.id;
+        render();
+      });
+      actions.appendChild(exp);
+    }
+
+    const dup = document.createElement("button");
+    dup.className = "icon-btn";
+    dup.title = "复制一份";
+    dup.textContent = "⧉";
+    dup.addEventListener("click", () => {
+      const arr = tasksOf(key);
+      const idx = arr.indexOf(task);
+      arr.splice(idx + 1, 0, cloneTask(task));
+      save(); render();
+    });
+
+    const del = document.createElement("button");
+    del.className = "icon-btn del";
+    del.title = "删除";
+    del.textContent = "✕";
+    del.addEventListener("click", () => {
+      const arr = tasksOf(key);
+      arr.splice(arr.indexOf(task), 1);
+      if (expandedId === task.id) expandedId = null;
+      save(); render();
+    });
+
+    actions.appendChild(dup);
+    actions.appendChild(del);
+    main.appendChild(check);
+    main.appendChild(pri);
+    main.appendChild(span);
+    main.appendChild(badges);
+    main.appendChild(actions);
+    li.appendChild(main);
+
+    if (!opts.noExpand && expandedId === task.id) li.appendChild(renderDetail(task));
+
+    li.addEventListener("dragstart", e => {
+      if (e.target.closest && e.target.closest(".task-detail")) { e.preventDefault(); return; }
+      drag = { id: task.id, fromKey: key };
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "copyMove";
+      e.dataTransfer.setData("text/plain", task.text);
+    });
+    li.addEventListener("dragend", () => {
+      drag = null;
+      li.classList.remove("dragging");
+      removePlaceholder();
+      document.querySelectorAll(".drop-hover").forEach(c => c.classList.remove("drop-hover"));
+    });
+
+    return li;
+  }
+
+  function cloneTask(task) {
+    return {
+      id: uid(), text: task.text, done: false, pri: task.pri || "low",
+      note: task.note || "",
+      subs: (task.subs || []).map(s => ({ id: uid(), text: s.text, done: false })),
+    };
+  }
+
+  /* ── detail panel ── */
+  function renderDetail(task) {
+    const box = document.createElement("div");
+    box.className = "task-detail";
+    box.addEventListener("mousedown", e => e.stopPropagation());
+
+    const note = document.createElement("textarea");
+    note.className = "note-input";
+    note.placeholder = "备注…";
+    note.rows = 1;
+    note.value = task.note || "";
+    const grow = () => { note.style.height = "auto"; note.style.height = note.scrollHeight + "px"; };
+    note.addEventListener("input", () => { task.note = note.value; grow(); save(); });
+    note.addEventListener("blur", () => render());
+    setTimeout(grow, 0);
+    box.appendChild(note);
+
+    const subsUl = document.createElement("ul");
+    subsUl.className = "subs";
+    (task.subs || []).forEach(sub => {
+      const li = document.createElement("li");
+      li.className = sub.done ? "done" : "";
+      const c = document.createElement("input");
+      c.type = "checkbox";
+      c.className = "task-check";
+      c.checked = sub.done;
+      c.addEventListener("change", () => { sub.done = c.checked; save(); render(); });
+      const t = document.createElement("span");
+      t.className = "sub-text";
+      t.textContent = sub.text;
+      const x = document.createElement("button");
+      x.className = "icon-btn del";
+      x.textContent = "✕";
+      x.title = "删除子任务";
+      x.addEventListener("click", () => {
+        task.subs.splice(task.subs.indexOf(sub), 1);
+        save(); render();
+      });
+      li.appendChild(c); li.appendChild(t); li.appendChild(x);
+      subsUl.appendChild(li);
+    });
+    box.appendChild(subsUl);
+
+    const add = document.createElement("input");
+    add.className = "sub-add";
+    add.type = "text";
+    add.placeholder = "＋ 子任务，回车添加";
+    add.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const text = add.value.trim();
+        if (!text) return;
+        (task.subs || (task.subs = [])).push({ id: uid(), text: text, done: false });
+        focusSubOf = task.id;
+        save(); render();
+      }
+    });
+    box.appendChild(add);
+    if (focusSubOf === task.id) { setTimeout(() => add.focus(), 0); focusSubOf = null; }
+    return box;
+  }
+
+  function startEdit(span, task) {
+    span.contentEditable = "true";
+    span.focus();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    span.addEventListener("keydown", function onKey(e) {
+      if (e.key === "Enter") { e.preventDefault(); span.blur(); }
+      if (e.key === "Escape") { span.textContent = task.text; span.blur(); }
+    });
+    span.addEventListener("blur", () => {
+      span.contentEditable = "false";
+      const text = span.textContent.trim();
+      if (text) task.text = text;
+      save(); render();
+    }, { once: true });
+  }
+
+  /* ── drag & drop (week view) ── */
+  function getPlaceholder() {
+    if (!placeholder) {
+      placeholder = document.createElement("li");
+      placeholder.className = "placeholder";
+    }
+    return placeholder;
+  }
+  function removePlaceholder() {
+    if (placeholder && placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+  }
+  function moveDragged(toKey, index, copy) {
+    const fromArr = tasksOf(drag.fromKey);
+    const task = fromArr.find(t => t.id === drag.id);
+    if (!task) { drag = null; render(); return; }
+    if (copy) {
+      tasksOf(toKey).splice(index, 0, cloneTask(task));
+    } else {
+      fromArr.splice(fromArr.indexOf(task), 1);
+      tasksOf(toKey).splice(index, 0, task);
+    }
+    drag = null;
+    save(); render();
+  }
+
+  function bindDropZone(ul, col) {
+    const over = e => {
+      if (!drag) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = e.altKey ? "copy" : "move";
+      col.classList.add("drop-hover");
+      const ph = getPlaceholder();
+      const items = [...ul.querySelectorAll(":scope > .task:not(.dragging)")];
+      const after = items.find(el => e.clientY < el.getBoundingClientRect().top + el.offsetHeight / 2);
+      if (after) ul.insertBefore(ph, after);
+      else ul.appendChild(ph);
+    };
+    const leave = e => { if (!col.contains(e.relatedTarget)) col.classList.remove("drop-hover"); };
+    const dropHandler = e => {
+      if (!drag) return;
+      e.preventDefault();
+      col.classList.remove("drop-hover");
+      const ph = getPlaceholder();
+      let index = 0;
+      for (const child of ul.children) {
+        if (child === ph) break;
+        if (child.classList && child.classList.contains("task") && !child.classList.contains("dragging")) index++;
+      }
+      removePlaceholder();
+      moveDragged(ul.dataset.key, index, e.altKey);
+    };
+    ul.addEventListener("dragover", over);
+    col.addEventListener("dragover", over);
+    col.addEventListener("dragleave", leave);
+    ul.addEventListener("drop", dropHandler);
+    col.addEventListener("drop", dropHandler);
+  }
+
+  /* ── quadrant view ── */
+  const QUADS = [
+    { cls: "q1", title: "重要 · 紧急", hint: "马上做 — 拖入 = 🔴 + 移到今天", important: true, urgent: true },
+    { cls: "q2", title: "重要 · 不紧急", hint: "计划做 — 拖入 = 🔴 + 排到之后", important: true, urgent: false },
+    { cls: "q3", title: "紧急 · 不重要", hint: "少花时间 — 拖入 = ⚪ + 移到今天", important: false, urgent: true },
+    { cls: "q4", title: "不重要 · 不紧急", hint: "有空再说 — 拖入 = ⚪ + 排到之后", important: false, urgent: false },
+  ];
+
+  function renderQuad(mon, keys) {
+    quadView.innerHTML = "";
+    const monKey = keys[0];
+
+    QUADS.forEach(q => {
+      const box = document.createElement("div");
+      box.className = "quad " + q.cls;
+
+      const head = document.createElement("div");
+      head.className = "quad-head";
+      head.innerHTML = '<span class="quad-mark"></span><span class="quad-title">' + q.title +
+        '</span><span class="quad-hint">' + q.hint + "</span>";
+      box.appendChild(head);
+
+      const ul = document.createElement("ul");
+      ul.className = "task-list";
+
+      const entries = [];
+      keys.forEach(key => {
+        tasksOf(key).forEach(task => {
+          if (!task.pri) task.pri = "low";
+          if (isImportant(task) === q.important && isUrgent(key) === q.urgent) entries.push({ task, key });
+        });
+      });
+      entries.sort((a, b) =>
+        (a.task.done - b.task.done) ||
+        (PRI_ORDER[a.task.pri] - PRI_ORDER[b.task.pri]) ||
+        a.key.localeCompare(b.key));
+
+      entries.forEach(({ task, key }) => {
+        ul.appendChild(renderTask(task, key, mon, { dayChip: dayLabelOf(key, monKey) + " " + fmtMD(key), noExpand: true }));
+      });
+      if (!entries.length) {
+        const hint = document.createElement("div");
+        hint.className = "empty-hint";
+        hint.textContent = "空";
+        ul.appendChild(hint);
+      }
+      box.appendChild(ul);
+
+      box.addEventListener("dragover", e => {
+        if (!drag) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        box.classList.add("drop-hover");
+      });
+      box.addEventListener("dragleave", e => { if (!box.contains(e.relatedTarget)) box.classList.remove("drop-hover"); });
+      box.addEventListener("drop", e => {
+        if (!drag) return;
+        e.preventDefault();
+        box.classList.remove("drop-hover");
+        applyQuadrant(q, keys);
+      });
+
+      quadView.appendChild(box);
+    });
+  }
+
+  function applyQuadrant(q, keys) {
+    const fromArr = tasksOf(drag.fromKey);
+    const task = fromArr.find(t => t.id === drag.id);
+    if (!task) { drag = null; render(); return; }
+
+    if (q.important) { if (!isImportant(task)) task.pri = "high"; }
+    else task.pri = "low";
+
+    let targetKey = drag.fromKey;
+    if (q.urgent) {
+      if (!isUrgent(targetKey)) targetKey = todayKey();
+    } else {
+      if (isUrgent(targetKey)) {
+        const tomorrow = keyOf(addDays(new Date(), 1));
+        targetKey = tomorrow > keys[4] ? keys[5] : tomorrow; // past Friday → weekend slot
+      }
+    }
+    targetKey = normalizeKey(targetKey);
+    if (targetKey !== drag.fromKey) {
+      fromArr.splice(fromArr.indexOf(task), 1);
+      tasksOf(targetKey).push(task);
+    }
+    drag = null;
+    save(); render();
+  }
+
+  /* ── report & export ── */
+  function priMark(t) { return t.pri === "high" ? " 🔴" : t.pri === "med" ? " 🟡" : ""; }
+
+  function buildReport(mon, keys) {
+    const fri = addDays(mon, 4);
+    const doneLines = [], todoLines = [];
+    keys.forEach(key => {
+      tasksOf(key).forEach(t => {
+        const label = "· " + dayLabelOf(key, keys[0]) + " " + fmtMD(key) + "　" + t.text + priMark(t);
+        const subs = (t.subs || []);
+        const subNote = subs.length ? "（子任务 " + subs.filter(s => s.done).length + "/" + subs.length + "）" : "";
+        (t.done ? doneLines : todoLines).push(label + subNote);
+      });
+    });
+    let out = "📋 周报 · " + mon.getFullYear() + "年" + (mon.getMonth() + 1) + "月" + mon.getDate() + "日 – " +
+      (fri.getMonth() + 1) + "月" + fri.getDate() + "日\n\n";
+    out += "✅ 本周完成（" + doneLines.length + "）\n";
+    out += doneLines.length ? doneLines.join("\n") : "（无）";
+    out += "\n\n⏳ 未完成 / 顺延（" + todoLines.length + "）\n";
+    out += todoLines.length ? todoLines.join("\n") : "（无）";
+    return out;
+  }
+
+  function buildWeekText(mon, keys) {
+    let out = "# 每周待办 " + (mon.getMonth() + 1) + "月" + mon.getDate() + "日那一周\n";
+    keys.forEach((key, i) => {
+      const list = tasksOf(key);
+      if (!list.length) return;
+      out += "\n## " + (i === 5 ? "周末 · 机动" : DAYS[i].cn) + " " + fmtMD(key) + "\n";
+      list.forEach(t => {
+        out += "- [" + (t.done ? "x" : " ") + "] " + t.text + priMark(t) + "\n";
+        (t.subs || []).forEach(s => { out += "    - [" + (s.done ? "x" : " ") + "] " + s.text + "\n"; });
+        if (t.note && t.note.trim()) out += "    > " + t.note.trim().replace(/\n/g, "\n    > ") + "\n";
+      });
+    });
+    return out;
+  }
+
+  function copyToClipboard(text, okMsg) {
+    const done = () => toast(okMsg || "已复制");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    } else fallbackCopy(text, done);
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败，请手动复制"); }
+    document.body.removeChild(ta);
+  }
+
+  function showModal(title, text) {
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    const modal = document.createElement("div");
+    modal.className = "modal";
+
+    const head = document.createElement("div");
+    head.className = "modal-head";
+    const h = document.createElement("h2");
+    h.textContent = title;
+    const close = document.createElement("button");
+    close.className = "icon-btn";
+    close.textContent = "✕";
+    close.title = "关闭";
+    head.appendChild(h); head.appendChild(close);
+
+    const body = document.createElement("div");
+    body.className = "modal-body";
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.readOnly = true;
+    body.appendChild(ta);
+
+    const foot = document.createElement("div");
+    foot.className = "modal-foot";
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "btn primary";
+    copyBtn.textContent = "复制全文";
+    copyBtn.addEventListener("click", () => copyToClipboard(ta.value, "周报已复制"));
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "btn";
+    closeBtn.textContent = "关闭";
+    foot.appendChild(copyBtn); foot.appendChild(closeBtn);
+
+    modal.appendChild(head); modal.appendChild(body); modal.appendChild(foot);
+    overlay.appendChild(modal);
+    const kill = () => { document.removeEventListener("keydown", esc); overlay.remove(); };
+    const esc = e => { if (e.key === "Escape") kill(); };
+    close.addEventListener("click", kill);
+    closeBtn.addEventListener("click", kill);
+    overlay.addEventListener("click", e => { if (e.target === overlay) kill(); });
+    document.addEventListener("keydown", esc);
+    document.body.appendChild(overlay);
+  }
+
+  /* ── toolbar wiring ── */
+  document.getElementById("prevWeek").addEventListener("click", () => { weekOffset--; render(); });
+  document.getElementById("nextWeek").addEventListener("click", () => { weekOffset++; render(); });
+  document.getElementById("thisWeek").addEventListener("click", () => { weekOffset = 0; render(); });
+
+  const viewWeekBtn = document.getElementById("viewWeek");
+  const viewQuadBtn = document.getElementById("viewQuad");
+  viewWeekBtn.addEventListener("click", () => {
+    view = "week";
+    viewWeekBtn.classList.add("active"); viewQuadBtn.classList.remove("active");
+    render();
+  });
+  viewQuadBtn.addEventListener("click", () => {
+    view = "quad";
+    viewQuadBtn.classList.add("active"); viewWeekBtn.classList.remove("active");
+    render();
+  });
+
+  document.getElementById("clearDone").addEventListener("click", () => {
+    const keys = weekKeys(mondayOf(weekOffset));
+    keys.forEach(k => { store[k] = tasksOf(k).filter(t => !t.done); });
+    save(); render();
+    toast("已清除本周完成项");
+  });
+
+  document.getElementById("reportBtn").addEventListener("click", () => {
+    const mon = mondayOf(weekOffset);
+    showModal("周报预览", buildReport(mon, weekKeys(mon)));
+  });
+
+  const exportMenu = document.getElementById("exportMenu");
+  document.addEventListener("click", e => {
+    if (exportMenu.open && !exportMenu.contains(e.target)) exportMenu.open = false;
+  });
+
+  document.getElementById("expJson").addEventListener("click", () => {
+    exportMenu.open = false;
+    const blob = new Blob([localStorage.getItem(STORE_KEY) || "{}"], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "weekly-todo-备份-" + todayKey() + ".json";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    toast("备份已下载");
+  });
+
+  const fileInput = document.getElementById("fileInput");
+  document.getElementById("impJson").addEventListener("click", () => { exportMenu.open = false; fileInput.click(); });
+  fileInput.addEventListener("change", () => {
+    const f = fileInput.files && fileInput.files[0];
+    fileInput.value = "";
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("bad");
+        const dateKeys = Object.keys(data).filter(isDateKey);
+        if (!dateKeys.length && !data._meta) throw new Error("bad");
+        if (!confirm("导入将覆盖当前所有数据（共 " + dateKeys.length + " 天的记录），确定吗？")) return;
+        store = data;
+        save(); render();
+        toast("导入成功");
+      } catch (e) {
+        toast("导入失败：不是有效的备份文件");
+      }
+    };
+    reader.readAsText(f);
+  });
+
+  document.getElementById("copyText").addEventListener("click", () => {
+    exportMenu.open = false;
+    const mon = mondayOf(weekOffset);
+    copyToClipboard(buildWeekText(mon, weekKeys(mon)), "本周内容已复制");
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
