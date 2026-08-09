@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography Direction — Pilates Grip Socks</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+        --white: #FFFFFF;
+        --cloud-white: #FCFCFA;
+        --warm-ivory: #FFF7EE;
+        --dark-cocoa: #4A3F38;
+        --muted-accent: #D9A77A;
+        --border-light: #EEEEEE;
+        --text-secondary: rgba(74, 63, 56, 0.7);
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+        background: var(--white);
+        color: var(--dark-cocoa);
+        line-height: 1.6;
+        padding: 80px 60px 120px;
+    }
+
+    .wrap { max-width: 1000px; margin: 0 auto; }
+
+    .eyebrow {
+        font-size: 12px; font-weight: 600; letter-spacing: 2px;
+        text-transform: uppercase; color: var(--muted-accent); margin-bottom: 20px;
+    }
+
+    h1 { font-size: 44px; font-weight: 300; letter-spacing: 0.5px; margin-bottom: 16px; }
+
+    .lede {
+        font-size: 17px; color: var(--text-secondary);
+        max-width: 640px; margin-bottom: 24px;
+    }
+
+    .meta {
+        font-size: 13px; color: var(--text-secondary);
+        padding-bottom: 40px; border-bottom: 1px solid var(--border-light); margin-bottom: 56px;
+    }
+
+    h2 {
+        font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+        margin: 56px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);
+    }
+
+    .shot {
+        display: grid; grid-template-columns: 200px 1fr; gap: 32px;
+        padding: 28px 0; border-bottom: 1px solid var(--border-light);
+    }
+
+    .shot-ref { }
+
+    .shot-slot { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+
+    .shot-file {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px; color: var(--text-secondary); word-break: break-all;
+    }
+
+    .shot-ratio {
+        display: inline-block; margin-top: 10px; padding: 3px 9px;
+        background: var(--warm-ivory); border-radius: 4px;
+        font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+    }
+
+    dl { display: grid; grid-template-columns: 108px 1fr; gap: 8px 20px; }
+
+    dt {
+        font-size: 12px; font-weight: 700; letter-spacing: 0.6px;
+        text-transform: uppercase; color: var(--text-secondary); padding-top: 2px;
+    }
+
+    dd { font-size: 15px; }
+
+    .rules {
+        background: var(--cloud-white); border: 1px solid var(--border-light);
+        border-radius: 14px; padding: 32px; margin-bottom: 16px;
+    }
+
+    .rules h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+
+    .rules ul { list-style: none; }
+
+    .rules li {
+        font-size: 15px; color: var(--text-secondary);
+        padding-left: 20px; position: relative; margin-bottom: 8px;
+    }
+
+    .rules li::before {
+        content: '—'; position: absolute; left: 0; color: var(--muted-accent);
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .prompt {
+        background: var(--dark-cocoa); color: var(--white);
+        border-radius: 14px; padding: 28px; margin-top: 16px;
+    }
+
+    .prompt h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+
+    .prompt p {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.85);
+    }
+
+    .prompt p + h3 { margin-top: 24px; }
+
+    @media (max-width: 768px) {
+        body { padding: 48px 20px 80px; }
+        h1 { font-size: 30px; }
+        .shot { grid-template-columns: 1fr; gap: 16px; }
+        dl { grid-template-columns: 1fr; gap: 2px 0; }
+        dt { padding-top: 10px; }
+        .two-col { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <p class="eyebrow">Production Brief</p>
+    <h1>Photography Direction</h1>
+    <p class="lede">
+        Every image slot on the storefront, with the shot it needs. Written for the day you
+        replace the placeholders with your own photography.
+    </p>
+    <p class="meta">
+        The site currently runs on 8 stand-in images reused across ~40 slots. This brief lists
+        what each slot actually calls for, so nothing gets missed on a shoot day.
+    </p>
+
+    <div class="rules">
+        <h3>Applies to every frame</h3>
+        <div class="two-col">
+            <ul>
+                <li>Natural daylight, soft shadows, bright but never blown out</li>
+                <li>Clean real environments — minimal studio, modern apartment, boutique space</li>
+                <li>Women 25–35, natural and confident, relaxed expression</li>
+                <li>Socks always legible, integrated into the styling rather than staged</li>
+            </ul>
+            <ul>
+                <li>No gym atmosphere, no performance or workout intensity</li>
+                <li>No dramatic or coloured studio lighting, no heavy contrast</li>
+                <li>No teenage or exaggerated influencer styling</li>
+                <li>No excessive beige, no wellness-retreat mood, no cold luxury</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Hero Carousel — 4 slides</h2>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Slide 1 — Brand</div>
+            <div class="shot-file">assets/img/studio-hero.jpg</div>
+            <span class="shot-ratio">16:9 · 2400×1350</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Brand introduction. The first thing anyone sees.</dd>
+            <dt>Scene</dt><dd>Woman wearing grip socks in a bright modern Pilates studio, reformers visible behind her.</dd>
+            <dt>Pose</dt><dd>Static, elegant, upright. Standing beside equipment or holding a mat — not mid-exercise.</dd>
+            <dt>Camera</dt><dd>Full body, eye level, subject placed right of centre.</dd>
+            <dt>Lighting</dt><dd>Natural window light from one side.</dd>
+            <dt>Focus</dt><dd>Socks visible but integrated — this frame sells the world, not the product.</dd>
+            <dt>Note</dt><dd>Headline sits over the left third. Keep that area uncluttered and light.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Slide 2 — Product detail</div>
+            <div class="shot-file">assets/img/socks-worn.jpg</div>
+            <span class="shot-ratio">16:9 · 2400×1350</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Show the design close enough to want it.</dd>
+            <dt>Scene</dt><dd>Close-up of feet wearing the socks, legs naturally positioned on a reformer.</dd>
+            <dt>Camera</dt><dd>Low angle, tight crop, shallow depth of field.</dd>
+            <dt>Lighting</dt><dd>Soft natural daylight, no hard shadow across the knit.</dd>
+            <dt>Focus</dt><dd>Texture, ribbing, cuff detail, any bow or print.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Slide 3 — Lifestyle</div>
+            <div class="shot-file">assets/img/studio-wide.jpg</div>
+            <span class="shot-ratio">16:9 · 2400×1350</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Place the product in a real day.</dd>
+            <dt>Scene</dt><dd>Woman arriving at or leaving a class — walking in, carrying a mat, sitting to change.</dd>
+            <dt>Pose</dt><dd>Candid and unposed. Not a ritual, just a moment.</dd>
+            <dt>Camera</dt><dd>Wide, environmental, eye level.</dd>
+            <dt>Lighting</dt><dd>Ambient daylight from windows.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Slide 4 — Collection</div>
+            <div class="shot-file">assets/img/grip-function.jpg</div>
+            <span class="shot-ratio">16:9 · 2400×1350</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Announce the season.</dd>
+            <dt>Scene</dt><dd>Several sock styles arranged together — flat lay or on a clean surface.</dd>
+            <dt>Camera</dt><dd>Overhead or slight angle, editorial arrangement.</dd>
+            <dt>Lighting</dt><dd>Even, soft, minimal shadow.</dd>
+            <dt>Focus</dt><dd>The full colour range read at a glance.</dd>
+        </dl>
+    </div>
+
+    <h2>Product cards — 4 per product, in hover order</h2>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Image 1 — Worn</div>
+            <div class="shot-file">Card default · gallery main</div>
+            <span class="shot-ratio">4:5 · 1200×1500</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>First impression, and the frame that carries the card.</dd>
+            <dt>Scene</dt><dd>Model wearing this colourway, feet clearly visible.</dd>
+            <dt>Camera</dt><dd>Close on the lower leg and foot, eye level to slightly low.</dd>
+            <dt>Focus</dt><dd>The colour must be unmistakable — this is what tells the variants apart.</dd>
+            <dt>Note</dt><dd>Needed once per colourway. This is the single biggest gap right now.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Image 2 — Styled</div>
+            <div class="shot-file">Hover step 1</div>
+            <span class="shot-ratio">4:5 · 1200×1500</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Show the socks as part of an outfit.</dd>
+            <dt>Scene</dt><dd>Full-body lifestyle — leggings, top, mat, the socks as the finishing detail.</dd>
+            <dt>Camera</dt><dd>Full body, eye level.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Image 3 — Detail</div>
+            <div class="shot-file">Hover step 2</div>
+            <span class="shot-ratio">4:5 · 1200×1500</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Communicate quality.</dd>
+            <dt>Scene</dt><dd>Macro on fabric, pattern, stitching, cuff, or the woven label.</dd>
+            <dt>Camera</dt><dd>Macro, very shallow depth of field.</dd>
+            <dt>Lighting</dt><dd>Raking side light to bring out the knit.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Image 4 — Grip</div>
+            <div class="shot-file">Hover step 3</div>
+            <span class="shot-ratio">4:5 · 1200×1500</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Explain the anti-slip function visually, without going athletic.</dd>
+            <dt>Scene</dt><dd>Standing on a mat with one foot lifted slightly, grip dots meeting the surface.</dd>
+            <dt>Pose</dt><dd>Elegant and controlled. A movement, not an exercise.</dd>
+            <dt>Camera</dt><dd>Low angle, close on the sole.</dd>
+            <dt>Focus</dt><dd>The grip dots, in contact and in focus.</dd>
+            <dt>Note</dt><dd>Currently missing entirely — no placeholder shows the sole.</dd>
+        </dl>
+    </div>
+
+    <h2>Product page — additional frames</h2>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Wearing effect</div>
+            <div class="shot-file">Gallery image 2</div>
+            <span class="shot-ratio">4:5 · 1200×1500</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Help her picture wearing them.</dd>
+            <dt>Scene</dt><dd>Seated on a reformer, legs naturally positioned, socks in frame.</dd>
+            <dt>Pose</dt><dd>Still and relaxed.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Lifestyle story</div>
+            <div class="shot-file">assets/img/morning.jpg</div>
+            <span class="shot-ratio">4:3 · 1600×1200</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Emotional close to the page.</dd>
+            <dt>Scene</dt><dd>Quiet moment before or after class — natural light, minimal setting.</dd>
+            <dt>Camera</dt><dd>Wide, environmental, subject small in frame.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Review photos ×3</div>
+            <div class="shot-file">Reviews section</div>
+            <span class="shot-ratio">4:3 · 1200×900</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Social proof that reads as real.</dd>
+            <dt>Scene</dt><dd>Customers wearing the socks in their own studios.</dd>
+            <dt>Camera</dt><dd>Slightly less polished than campaign work — genuine, not staged.</dd>
+            <dt>Note</dt><dd>Prioritise women actually wearing the product over flat lays.</dd>
+        </dl>
+    </div>
+
+    <h2>Homepage sections</h2>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Brand introduction</div>
+            <div class="shot-file">assets/img/studio-wide.jpg</div>
+            <span class="shot-ratio">4:3 · 1600×1200</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Carry the brand philosophy beside the copy.</dd>
+            <dt>Scene</dt><dd>Woman wearing the socks in a considered, minimal space.</dd>
+            <dt>Camera</dt><dd>Medium wide, generous negative space.</dd>
+            <dt>Mood</dt><dd>Calm, modern, feminine.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Lifestyle gallery ×6</div>
+            <div class="shot-file">The World Around Us</div>
+            <span class="shot-ratio">1 tall 1:2 · 1 wide 2:1 · 4 square</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Show the world around the brand.</dd>
+            <dt>Scene</dt><dd>Studio moment, outfit styling, product detail, accessories, movement, studio space.</dd>
+            <dt>Camera</dt><dd>Mixed crops — the grid is intentionally uneven.</dd>
+            <dt>Note</dt><dd>Shoot the tall and wide slots deliberately; centre crops will lose the subject.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Community grid ×6</div>
+            <div class="shot-file">Styled by Our Community</div>
+            <span class="shot-ratio">1:1 · 1000×1000</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Community and social proof.</dd>
+            <dt>Scene</dt><dd>Pilates moments, outfit inspiration, flat lays, studio moments, seasonal.</dd>
+            <dt>Camera</dt><dd>Square, varied framing.</dd>
+            <dt>Note</dt><dd>Should look like real premium customer content — never a low-res repost.</dd>
+        </dl>
+    </div>
+
+    <h2>Brand pages</h2>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Our Story</div>
+            <div class="shot-file">About page</div>
+            <span class="shot-ratio">16:9 hero · 4:3 supporting</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Emotional connection to the brand.</dd>
+            <dt>Scene</dt><dd>Hero: woman wearing the socks in a lifestyle setting. Supporting: colour samples, yarn, fabric, pattern trials.</dd>
+            <dt>Camera</dt><dd>Hero wide; process shots overhead and close.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Collaborate</div>
+            <div class="shot-file">Collab page</div>
+            <span class="shot-ratio">4:3 · 1600×1200</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Show who the brand partners with.</dd>
+            <dt>Scene</dt><dd>Instructor teaching, studio interior, creator at work.</dd>
+        </dl>
+    </div>
+
+    <div class="shot">
+        <div class="shot-ref">
+            <div class="shot-slot">Wholesale</div>
+            <div class="shot-file">Wholesale page</div>
+            <span class="shot-ratio">4:3 · 1600×1200</span>
+        </div>
+        <dl>
+            <dt>Purpose</dt><dd>Help a buyer picture it in their space.</dd>
+            <dt>Scene</dt><dd>Collection laid out together, retail display, packaging in a boutique.</dd>
+        </dl>
+    </div>
+
+    <div class="prompt">
+        <h3>If generating reference frames</h3>
+        <p>Modern feminine Pilates lifestyle photography, woman aged 25-35 wearing stylish Pilates grip socks, clean minimal environment, natural daylight, premium fashion ecommerce photography, editorial lifestyle style, realistic texture, soft shadows, elegant composition, modern feminine aesthetic, high-end accessory brand feeling</p>
+        <h3>Negative</h3>
+        <p>childish, teenage, overly pink, cute cartoon, gym advertisement, bodybuilding, fitness competition, wellness retreat, excessive beige, luxury fashion cold style</p>
+    </div>
+
+</div>
+</body>
+</html>

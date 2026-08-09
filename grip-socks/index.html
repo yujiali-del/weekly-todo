@@ -178,29 +178,38 @@
             color: var(--text-secondary);
         }
 
+        .search-section-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 16px;
+        }
+
         .search-suggestions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-bottom: 40px;
         }
 
         .search-suggestion {
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 9px 16px;
+            background: var(--white);
+            border: 1px solid #E5E5E5;
             border-radius: 8px;
-            color: var(--white);
+            color: var(--dark-cocoa);
             cursor: pointer;
-            text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s;
+            letter-spacing: 0.2px;
+            font-family: inherit;
+            transition: opacity 0.3s;
         }
 
         .search-suggestion:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            opacity: 0.75;
         }
 
         .search-results {
@@ -228,7 +237,7 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 0.7s ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -309,6 +318,38 @@
             background: #3a3028;
         }
 
+        /* Thin editorial arrows — neutral, no fill, no pill shape. */
+        .hero-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dark-cocoa);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-nav:hover {
+            opacity: 1;
+        }
+
+        .hero-nav.prev { left: 12px; }
+        .hero-nav.next { right: 12px; }
+
+        .hero-nav svg {
+            width: 24px;
+            height: 24px;
+        }
+
         .carousel-dots {
             position: absolute;
             bottom: 32px;
@@ -369,6 +410,12 @@
             gap: 40px;
         }
 
+        /* Search results run 4-up; the merchandised grids stay at 3. */
+        .product-grid--search {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
         .product-card {
             display: flex;
             flex-direction: column;
@@ -397,7 +444,12 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.4s ease-in-out;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Leaving the card snaps back to image 1 rather than fading through. */
+        .product-image-container.resetting .product-image {
+            transition: none;
         }
 
         .product-image img {
@@ -910,6 +962,220 @@
             display: block;
         }
 
+        /* ---- Cart drawer ---- */
+        .cart-scrim {
+            position: fixed;
+            inset: 0;
+            background: rgba(74, 63, 56, 0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            z-index: 250;
+        }
+
+        .cart-scrim.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 400px;
+            max-width: 100vw;
+            background: var(--white);
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 260;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.open {
+            transform: translateX(0);
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .cart-title {
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--dark-cocoa);
+            line-height: 1;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 24px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .cart-item-image {
+            width: 72px;
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--light-gray);
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-variant {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .qty-control button {
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--dark-cocoa);
+            line-height: 1;
+        }
+
+        .qty-control button:hover {
+            background: var(--cloud-white);
+        }
+
+        .qty-value {
+            min-width: 28px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .cart-item-price {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+
+        .cart-item-remove:hover {
+            color: var(--dark-cocoa);
+        }
+
+        .cart-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .cart-subtotal {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .cart-subtotal-label {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .cart-subtotal-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .cart-note {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .cart-checkout {
+            width: 100%;
+            padding: 16px;
+            background: var(--dark-cocoa);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .cart-checkout:hover {
+            background: #3a3028;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .cart-empty p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
         .toast {
             position: fixed;
             bottom: 32px;
@@ -1339,7 +1605,8 @@
            RESPONSIVE
            ======================= */
         @media (max-width: 1024px) {
-            .product-grid {
+            .product-grid,
+            .product-grid--search {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 30px;
             }
@@ -1426,9 +1693,14 @@
                 font-size: 32px;
             }
 
-            .product-grid {
+            .product-grid,
+            .product-grid--search {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
+            }
+
+            .cart-drawer {
+                width: 100%;
             }
 
             .featured-banner,
@@ -1490,6 +1762,12 @@
                 grid-template-columns: 1fr;
             }
 
+            /* Search results stay 2-up on mobile so a result set stays scannable. */
+            .product-grid--search {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
             .community-gallery {
                 grid-template-columns: 1fr;
             }
@@ -1517,7 +1795,7 @@
             <button class="icon-btn menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
             <button class="icon-btn" onclick="openSearch()">🔍</button>
             <button class="icon-btn" onclick="goToPage('wishlist')">❤️</button>
-            <button class="icon-btn" style="position: relative;">
+            <button class="icon-btn" style="position: relative;" onclick="openCart()" aria-label="Open bag">
                 🛍️
                 <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
             </button>
@@ -1530,6 +1808,23 @@
         <a onclick="goToPage('collab'); toggleMobileMenu();">Collaborate</a>
         <a onclick="goToPage('wishlist'); toggleMobileMenu();">My Favorites</a>
     </div>
+
+    <div class="cart-scrim" id="cartScrim" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping bag">
+        <div class="cart-header">
+            <span class="cart-title">Your Bag</span>
+            <button class="cart-close" onclick="closeCart()" aria-label="Close bag">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-subtotal">
+                <span class="cart-subtotal-label">Subtotal</span>
+                <span class="cart-subtotal-value" id="cartSubtotal">$0</span>
+            </div>
+            <p class="cart-note">Shipping and taxes calculated at checkout.</p>
+            <button class="cart-checkout" onclick="checkout()">Checkout</button>
+        </div>
+    </aside>
 
     <div class="toast" id="toast"></div>
 
@@ -1546,12 +1841,11 @@
                 id="searchInput"
                 placeholder="Search socks, colors, collections..."
                 oninput="handleSearch()"
+                onkeydown="if (event.key === 'Enter') submitSearch()"
             >
-            <div class="search-suggestions" id="searchSuggestions">
-                <div class="search-suggestion" onclick="searchFor('Grip Socks')">Grip Socks</div>
-                <div class="search-suggestion" onclick="searchFor('New Arrivals')">New Arrivals</div>
-                <div class="search-suggestion" onclick="searchFor('Best Sellers')">Best Sellers</div>
-                <div class="search-suggestion" onclick="searchFor('Blue')">Blue</div>
+            <div id="popularSearches">
+                <div class="search-section-label">Popular Searches</div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
             </div>
             <div class="search-results" id="searchResults"></div>
         </div>
@@ -1561,7 +1855,7 @@
     <div id="homePage" class="page active">
         <!-- Hero Carousel -->
         <div class="hero-container">
-            <div class="hero-slide active">
+            <div class="hero-slide active" data-shot="hero-1-brand">
                 <img src="assets/img/studio-hero.jpg" alt="Woman practising Pilates in a bright studio">
                 <div class="hero-content">
                     <h1 class="hero-title">Designed for Movement</h1>
@@ -1569,7 +1863,7 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Explore Collection</button>
                 </div>
             </div>
-            <div class="hero-slide">
+            <div class="hero-slide" data-shot="hero-2-product-detail">
                 <img src="assets/img/socks-worn.jpg" alt="Close-up of grip socks worn on a reformer">
                 <div class="hero-content">
                     <p class="hero-eyebrow">The Detail</p>
@@ -1578,7 +1872,7 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Shop New Arrivals</button>
                 </div>
             </div>
-            <div class="hero-slide">
+            <div class="hero-slide" data-shot="hero-3-lifestyle">
                 <img src="assets/img/studio-wide.jpg" alt="Pilates studio styling">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Studio Days</p>
@@ -1587,7 +1881,7 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Explore Collection</button>
                 </div>
             </div>
-            <div class="hero-slide">
+            <div class="hero-slide" data-shot="hero-4-collection">
                 <img src="assets/img/grip-function.jpg" alt="Grip socks on a reformer">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Spring 2025</p>
@@ -1596,6 +1890,12 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Shop New Arrivals</button>
                 </div>
             </div>
+            <button class="hero-nav prev" onclick="stepSlide(-1)" aria-label="Previous slide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 4 7 12 15 20"/></svg>
+            </button>
+            <button class="hero-nav next" onclick="stepSlide(1)" aria-label="Next slide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 4 17 12 9 20"/></svg>
+            </button>
             <div class="carousel-dots">
                 <div class="dot active" onclick="goToSlide(0)"></div>
                 <div class="dot" onclick="goToSlide(1)"></div>
@@ -1631,7 +1931,7 @@
         <!-- Brand Introduction -->
         <section class="section">
             <div class="brand-intro">
-                <div class="brand-intro-image"><img src="assets/img/studio-wide.jpg" alt="Pilates studio" loading="lazy"></div>
+                <div class="brand-intro-image" data-shot="home-brand-intro"><img src="assets/img/studio-wide.jpg" alt="Pilates studio" loading="lazy"></div>
                 <div class="brand-intro-text">
                     <p class="brand-intro-eyebrow">Our Story</p>
                     <h2 class="brand-intro-title">Designed for women who love Pilates, beautiful details, and everyday style.</h2>
@@ -1671,7 +1971,7 @@
                 <h2 class="section-title">The World Around Us</h2>
                 <p class="section-description">Studios, outfits, and the details we love</p>
             </div>
-            <div class="lifestyle-gallery">
+            <div class="lifestyle-gallery" data-shot="home-lifestyle-gallery">
                 <div class="lifestyle-item tall"><img src="assets/img/styling.jpg" alt="Studio moment" loading="lazy"></div>
                 <div class="lifestyle-item wide"><img src="assets/img/studio-wide.jpg" alt="Outfit styling" loading="lazy"></div>
                 <div class="lifestyle-item"><img src="assets/img/texture.jpg" alt="Product detail" loading="lazy"></div>
@@ -1687,7 +1987,7 @@
                 <h2 class="section-title">Styled by Our Community</h2>
                 <p class="section-description">Discover how Pilates lovers wear their favorite styles</p>
             </div>
-            <div class="community-gallery" id="communityGallery">
+            <div class="community-gallery" id="communityGallery" data-shot="home-community-grid">
                 <div class="community-item"><img src="assets/img/socks-worn.jpg" alt="" loading="lazy"></div>
                 <div class="community-item"><img src="assets/img/studio-hero.jpg" alt="" loading="lazy"></div>
                 <div class="community-item"><img src="assets/img/wearing.jpg" alt="" loading="lazy"></div>
@@ -1728,7 +2028,7 @@
             <button onclick="goToPage('home')" style="background: none; border: none; cursor: pointer; margin-bottom: 40px; font-size: 16px; color: var(--dark-cocoa);">← Back to Shop</button>
             <div class="product-detail-container">
                 <div class="product-gallery">
-                    <div class="product-gallery-main"><img id="galleryMain" alt=""></div>
+                    <div class="product-gallery-main" data-shot="pdp-gallery"><img id="galleryMain" alt=""></div>
                     <div class="product-gallery-thumbnails" id="galleryThumbs"></div>
                 </div>
                 <div class="product-detail-info">
@@ -1785,7 +2085,7 @@
 
             <!-- Lifestyle Story -->
             <section class="product-story">
-                <div class="product-story-image"><img src="assets/img/morning.jpg" alt="Morning light" loading="lazy"></div>
+                <div class="product-story-image" data-shot="pdp-lifestyle-story"><img src="assets/img/morning.jpg" alt="Morning light" loading="lazy"></div>
                 <div class="product-story-text">
                     <h3 class="product-story-title">Designed to bring a little more personality into every Pilates class.</h3>
                     <p class="product-story-body">Made for the mornings you look forward to — the studio, the light, the small details that make the hour yours.</p>
@@ -1825,6 +2125,23 @@
                 <div class="product-grid" id="pdpRecentlyViewedGrid"></div>
             </section>
         </div>
+    </div>
+
+    <!-- SEARCH RESULTS PAGE -->
+    <div id="searchPage" class="page">
+        <section class="section">
+            <div class="section-header">
+                <h1 class="section-title" id="searchResultsTitle">Search results</h1>
+                <p class="section-description" id="searchResultsCount"></p>
+            </div>
+            <div class="product-grid product-grid--search" id="searchPageGrid"></div>
+            <div id="searchPageEmpty" style="display: none; text-align: center; padding: 60px 20px;">
+                <p style="font-size: 16px; color: var(--text-secondary); margin-bottom: 24px;">
+                    Nothing here yet. Try another style or explore our favourites.
+                </p>
+                <button class="hero-cta" onclick="goToPage('home')">Browse the collection</button>
+            </div>
+        </section>
     </div>
 
     <!-- WISHLIST PAGE -->
@@ -2005,7 +2322,7 @@
                 bestseller: true,
                 isNew: true,
                 collection: 'Essentials',
-                keywords: ['grip socks', 'blue', 'green', 'everyday']
+                keywords: ['grip socks', 'blue', 'green', 'black', 'everyday', 'pilates', 'barre']
             },
             {
                 id: 2,
@@ -2017,7 +2334,7 @@
                 bestseller: false,
                 isNew: false,
                 collection: 'Studio',
-                keywords: ['grip socks', 'neutral', 'minimalist']
+                keywords: ['grip socks', 'neutral', 'minimalist', 'white', 'pilates', 'barre']
             },
             {
                 id: 3,
@@ -2029,7 +2346,7 @@
                 bestseller: true,
                 isNew: false,
                 collection: 'Studio',
-                keywords: ['grip socks', 'purple', 'pink', 'arch support']
+                keywords: ['grip socks', 'purple', 'pink', 'arch support', 'pilates', 'barre']
             },
             {
                 id: 4,
@@ -2041,7 +2358,7 @@
                 bestseller: false,
                 isNew: false,
                 collection: 'Signature',
-                keywords: ['grip socks', 'green', 'colorblock']
+                keywords: ['grip socks', 'green', 'colorblock', 'black', 'pilates', 'barre']
             },
             {
                 id: 5,
@@ -2053,7 +2370,7 @@
                 bestseller: true,
                 isNew: false,
                 collection: 'Essentials',
-                keywords: ['grip socks', 'neutral', 'pack', 'everyday']
+                keywords: ['grip socks', 'neutral', 'pack', 'everyday', 'white', 'pilates', 'barre']
             },
             {
                 id: 6,
@@ -2065,7 +2382,31 @@
                 bestseller: false,
                 isNew: true,
                 collection: 'Signature',
-                keywords: ['grip socks', 'pink', 'purple', 'gradient']
+                keywords: ['grip socks', 'pink', 'purple', 'gradient', 'pilates', 'barre']
+            },
+            {
+                id: 7,
+                name: 'Ballet Bow Grip Socks',
+                price: 44,
+                colors: ['#F0E4E4', '#E8C4B0', '#2E2E2E'],
+                colorNames: ['Powder', 'Blush', 'Black'],
+                badge: 'NEW',
+                bestseller: true,
+                isNew: true,
+                collection: 'Ballet',
+                keywords: ['grip socks', 'ballet', 'bow', 'pink', 'black', 'pilates', 'barre']
+            },
+            {
+                id: 8,
+                name: 'Floral Garden Grip Socks',
+                price: 46,
+                colors: ['#FFFFFF', '#D9B5C8', '#A8B5A0'],
+                colorNames: ['White', 'Rose', 'Sage'],
+                badge: null,
+                bestseller: false,
+                isNew: true,
+                collection: 'Floral',
+                keywords: ['grip socks', 'floral', 'print', 'white', 'pink', 'pilates', 'barre']
             }
         ];
 
@@ -2074,13 +2415,17 @@
         // the colour swatches carry the range until real per-colourway shots exist.
         // Every product leads with a different photo — products share grids, and
         // identical lead images side by side read as a rendering bug.
+        // Leads must be distinct within New Arrivals (1,6,7,8) and Best Sellers (1,3,5,7),
+        // and the socks-visible shots go to the merchandised products.
         const SHOT_SETS = [
             ['socks-worn', 'styling', 'texture', 'grip-function'],
-            ['wearing', 'studio-wide', 'texture', 'grip-function'],
+            ['texture', 'studio-wide', 'wearing', 'grip-function'],
             ['styling', 'studio-hero', 'texture', 'grip-function'],
-            ['studio-wide', 'morning', 'texture', 'grip-function'],
+            ['studio-hero', 'morning', 'texture', 'grip-function'],
             ['morning', 'wearing', 'texture', 'grip-function'],
-            ['grip-function', 'socks-worn', 'styling', 'texture']
+            ['grip-function', 'socks-worn', 'styling', 'texture'],
+            ['wearing', 'socks-worn', 'texture', 'grip-function'],
+            ['studio-wide', 'texture', 'socks-worn', 'grip-function']
         ];
         products.forEach((p, i) => {
             p.shots = SHOT_SETS[i].map(name => `assets/img/${name}.jpg`);
@@ -2091,15 +2436,29 @@
         let wishlist = [];
         let currentProduct = null;
         let recentlyViewed = [];
+        let selectedColorIndex = 0;
 
         // Initialize
         window.addEventListener('load', () => {
             loadWishlist();
             loadCart();
+            renderCart();
+            renderPopularSearches();
             recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
             renderNewArrivals();
             renderBestSellers();
             renderRecentlyViewed();
+
+            // Seed history so the first Back press has somewhere to return to.
+            const initial = stateFromUrl();
+            history.replaceState(initial, '', urlFor(initial));
+            render(initial);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Escape') return;
+            closeSearch();
+            closeCart();
         });
 
         function renderRecentlyViewed() {
@@ -2112,11 +2471,62 @@
         }
 
         // Navigation
-        function goToPage(page) {
+        // ---- Routing -------------------------------------------------------
+        // The site is a single static file on GitHub Pages, so real paths like
+        // /search would 404 on refresh. Routes live in the query string on the
+        // same path instead: shareable, refreshable, and back/forward works.
+
+        function showPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page + 'Page').classList.add('active');
             currentPage = page;
             window.scrollTo(0, 0);
+        }
+
+        function urlFor(state) {
+            const base = window.location.pathname;
+            if (state.page === 'search') return `${base}?q=${encodeURIComponent(state.query)}`;
+            if (state.page === 'productDetail') return `${base}?product=${state.productId}`;
+            if (state.page === 'home') return base;
+            return `${base}?page=${state.page}`;
+        }
+
+        function navigate(state, { replace = false } = {}) {
+            const method = replace ? 'replaceState' : 'pushState';
+            history[method](state, '', urlFor(state));
+            render(state);
+        }
+
+        function render(state) {
+            if (state.page === 'productDetail') {
+                const product = products.find(p => p.id === Number(state.productId));
+                if (!product) return render({ page: 'home' });
+                showProduct(product);
+                showPage('productDetail');
+                return;
+            }
+            if (state.page === 'search') {
+                renderSearchPage(state.query);
+                showPage('search');
+                return;
+            }
+            showPage(state.page);
+        }
+
+        function stateFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('q')) return { page: 'search', query: params.get('q') };
+            if (params.has('product')) return { page: 'productDetail', productId: params.get('product') };
+            const page = params.get('page');
+            const known = ['home', 'wishlist', 'about', 'collab', 'wholesale'];
+            return { page: known.includes(page) ? page : 'home' };
+        }
+
+        window.addEventListener('popstate', e => render(e.state || stateFromUrl()));
+
+        function goToPage(page) {
+            closeSearch();
+            navigate({ page });
         }
 
         function toggleMobileMenu() {
@@ -2133,10 +2543,8 @@
         const slides = document.querySelectorAll('.hero-slide');
         const dots = document.querySelectorAll('.dot');
 
-        function goToSlide(n) {
-            currentSlide = n;
-            updateSlides();
-        }
+        const SLIDE_INTERVAL = 4500;
+        let slideTimer;
 
         function updateSlides() {
             slides.forEach(s => s.classList.remove('active'));
@@ -2145,10 +2553,26 @@
             dots[currentSlide].classList.add('active');
         }
 
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % slides.length;
+        // Manual navigation restarts the clock, otherwise a click can be
+        // overridden a moment later by a timer that was already mid-cycle.
+        function startAutoRotate() {
+            clearInterval(slideTimer);
+            slideTimer = setInterval(() => stepSlide(1, false), SLIDE_INTERVAL);
+        }
+
+        function stepSlide(direction, manual = true) {
+            currentSlide = (currentSlide + direction + slides.length) % slides.length;
             updateSlides();
-        }, 6000);
+            if (manual) startAutoRotate();
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            updateSlides();
+            startAutoRotate();
+        }
+
+        startAutoRotate();
 
         // Render Products
         function createProductCard(product) {
@@ -2188,17 +2612,24 @@
 
             const images = card.querySelectorAll('.product-image');
 
+            const HOVER_STEP = 800;
+
             container.addEventListener('mouseenter', () => {
+                clearInterval(carouselInterval);
                 carouselInterval = setInterval(() => {
                     imageIndex = (imageIndex + 1) % images.length;
                     images.forEach((img, i) => img.classList.toggle('active', i === imageIndex));
-                }, 1200);
+                }, HOVER_STEP);
             });
 
             container.addEventListener('mouseleave', () => {
                 clearInterval(carouselInterval);
                 imageIndex = 0;
+                container.classList.add('resetting');
                 images.forEach((img, i) => img.classList.toggle('active', i === 0));
+                // Force a reflow so the transition-less state is painted before restoring it.
+                void container.offsetWidth;
+                container.classList.remove('resetting');
             });
 
             if (wishlist.includes(product.id)) {
@@ -2226,7 +2657,14 @@
 
         // Product Detail
         function openProduct(productId) {
-            currentProduct = products.find(p => p.id === productId);
+            closeSearch();
+            navigate({ page: 'productDetail', productId });
+        }
+
+        function showProduct(product) {
+            currentProduct = product;
+            const productId = product.id;
+            selectedColorIndex = 0;
 
             recentlyViewed = [productId, ...recentlyViewed.filter(id => id !== productId)].slice(0, 4);
             localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
@@ -2240,7 +2678,8 @@
             // Color options
             const colorOptions = document.getElementById('colorOptions');
             colorOptions.innerHTML = currentProduct.colors.map((color, i) => `
-                <button class="color-option ${i === 0 ? 'selected' : ''}" style="background: ${color};" onclick="selectColor(this)"></button>
+                <button class="color-option ${i === 0 ? 'selected' : ''}" style="background: ${color};"
+                        title="${currentProduct.colorNames[i]}" onclick="selectColor(this, ${i})"></button>
             `).join('');
 
             renderGallery(currentProduct);
@@ -2254,8 +2693,6 @@
             } else {
                 wishlistBtn.classList.remove('active');
             }
-
-            goToPage('productDetail');
         }
 
         const REVIEW_PHOTOS = [
@@ -2294,7 +2731,7 @@
 
             // Then products sharing a colour or style trait, excluding what's already shown.
             // 'grip socks' is on every product, so it carries no signal and would make this random.
-            const GENERIC = new Set(['grip socks']);
+            const GENERIC = new Set(['grip socks', 'pilates', 'barre']);
             const traitsOf = p => new Set(
                 [...p.keywords, ...p.colorNames.map(c => c.toLowerCase())].filter(t => !GENERIC.has(t))
             );
@@ -2317,9 +2754,10 @@
             fillGrid('pdpRecentlyViewedGrid', priorViews);
         }
 
-        function selectColor(btn) {
+        function selectColor(btn, index) {
             document.querySelectorAll('.color-option').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
+            selectedColorIndex = index;
         }
 
         function selectSize(btn) {
@@ -2354,13 +2792,112 @@
             return currentProduct.id;
         }
 
-        // Cart
-        function addToCart(productId) {
+        // ---- Cart ----------------------------------------------------------
+        // Lines are keyed by product + colour so the same sock in two colours
+        // stays as two rows rather than silently merging.
+        function lineKey(productId, colorName) {
+            return `${productId}::${colorName}`;
+        }
+
+        function addToCart(productId, colorIndex = null) {
             const product = products.find(p => p.id === productId);
-            cart.push(product);
+            const index = colorIndex ?? (product.id === currentProduct?.id ? selectedColorIndex : 0);
+            const colorName = product.colorNames[index];
+            const key = lineKey(productId, colorName);
+
+            const existing = cart.find(line => line.key === key);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({
+                    key,
+                    productId,
+                    name: product.name,
+                    price: product.price,
+                    colorName,
+                    image: product.shots[0],
+                    qty: 1
+                });
+            }
+
             saveCart();
+            renderCart();
+            openCart();
+        }
+
+        function changeQty(key, delta) {
+            const line = cart.find(l => l.key === key);
+            if (!line) return;
+            line.qty += delta;
+            if (line.qty < 1) return removeFromCart(key);
+            saveCart();
+            renderCart();
+        }
+
+        function removeFromCart(key) {
+            cart = cart.filter(l => l.key !== key);
+            saveCart();
+            renderCart();
+        }
+
+        function cartCount() {
+            return cart.reduce((sum, l) => sum + l.qty, 0);
+        }
+
+        function cartSubtotal() {
+            return cart.reduce((sum, l) => sum + l.price * l.qty, 0);
+        }
+
+        function renderCart() {
+            const items = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+
+            if (!cart.length) {
+                items.innerHTML = `
+                    <div class="cart-empty">
+                        <p>Your bag is currently empty.</p>
+                        <button class="hero-cta" onclick="closeCart(); goToPage('home');">Continue Shopping</button>
+                    </div>`;
+                footer.style.display = 'none';
+            } else {
+                items.innerHTML = cart.map(line => `
+                    <div class="cart-item">
+                        <div class="cart-item-image"><img src="${line.image}" alt=""></div>
+                        <div>
+                            <div class="cart-item-name">${line.name}</div>
+                            <div class="cart-item-variant">${line.colorName} · One Size</div>
+                            <div class="cart-item-row">
+                                <div class="qty-control">
+                                    <button onclick="changeQty('${line.key}', -1)" aria-label="Decrease quantity">−</button>
+                                    <span class="qty-value">${line.qty}</span>
+                                    <button onclick="changeQty('${line.key}', 1)" aria-label="Increase quantity">+</button>
+                                </div>
+                                <span class="cart-item-price">$${line.price * line.qty}</span>
+                            </div>
+                            <button class="cart-item-remove" onclick="removeFromCart('${line.key}')">Remove</button>
+                        </div>
+                    </div>
+                `).join('');
+                footer.style.display = 'block';
+                document.getElementById('cartSubtotal').textContent = '$' + cartSubtotal();
+            }
+
             updateCartBadge();
-            showToast(`${product.name} added to bag`);
+        }
+
+        function openCart() {
+            renderCart();
+            document.getElementById('cartDrawer').classList.add('open');
+            document.getElementById('cartScrim').classList.add('open');
+        }
+
+        function closeCart() {
+            document.getElementById('cartDrawer').classList.remove('open');
+            document.getElementById('cartScrim').classList.remove('open');
+        }
+
+        function checkout() {
+            showToast('Checkout is not connected in this preview');
         }
 
         let toastTimer;
@@ -2377,19 +2914,21 @@
         }
 
         function loadCart() {
-            const saved = localStorage.getItem('cart');
-            if (saved) cart = JSON.parse(saved);
+            try {
+                const saved = JSON.parse(localStorage.getItem('cart') || '[]');
+                // Earlier builds stored bare product objects; drop anything without a line key.
+                cart = Array.isArray(saved) ? saved.filter(l => l && l.key && l.qty) : [];
+            } catch {
+                cart = [];
+            }
             updateCartBadge();
         }
 
         function updateCartBadge() {
             const badge = document.getElementById('cartBadge');
-            if (cart.length > 0) {
-                badge.textContent = cart.length;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
+            const count = cartCount();
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
         }
 
         // Wishlist
@@ -2448,17 +2987,50 @@
 
         // Search
         function openSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            handleSearch();
             document.getElementById('searchOverlay').classList.add('active');
-            document.getElementById('searchInput').focus();
+            input.focus();
         }
 
         function closeSearch() {
             document.getElementById('searchOverlay').classList.remove('active');
         }
 
+        const POPULAR_SEARCHES = ['Grip Socks', 'Ballet', 'New Arrivals', 'Best Sellers', 'Floral',
+                                  'Black', 'White', 'Blue', 'Pilates', 'Barre'];
+
+        function renderPopularSearches() {
+            document.getElementById('searchSuggestions').innerHTML = POPULAR_SEARCHES
+                .map(t => `<button class="search-suggestion" onclick="searchFor('${t}')">${t}</button>`)
+                .join('');
+        }
+
+        // Clicking a tag commits to the results page rather than filtering in place.
         function searchFor(query) {
             document.getElementById('searchInput').value = query;
-            handleSearch();
+            closeSearch();
+            navigate({ page: 'search', query });
+        }
+
+        function submitSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) searchFor(query);
+        }
+
+        function renderSearchPage(query) {
+            const results = searchProducts(query.toLowerCase());
+            document.getElementById('searchResultsTitle').textContent = `Search results for "${query}"`;
+            document.getElementById('searchResultsCount').textContent =
+                results.length ? `${results.length} ${results.length === 1 ? 'style' : 'styles'}` : '';
+
+            const grid = document.getElementById('searchPageGrid');
+            grid.innerHTML = '';
+            results.forEach(p => grid.appendChild(createProductCard(p)));
+
+            grid.style.display = results.length ? 'grid' : 'none';
+            document.getElementById('searchPageEmpty').style.display = results.length ? 'none' : 'block';
         }
 
         function searchProducts(query) {
@@ -2475,31 +3047,38 @@
         }
 
         function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const suggestions = document.getElementById('searchSuggestions');
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const popular = document.getElementById('popularSearches');
             const results = document.getElementById('searchResults');
 
             if (!query) {
-                suggestions.style.display = 'grid';
+                popular.style.display = 'block';
                 results.classList.remove('active');
                 return;
             }
 
-            suggestions.style.display = 'none';
+            popular.style.display = 'none';
             const filtered = searchProducts(query);
 
             if (filtered.length === 0) {
                 results.innerHTML = '<p style="color: var(--white); text-align: center;">Nothing here yet. Try another style.</p>';
             } else {
-                results.innerHTML = `<div class="product-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; color: var(--white);">${
-                    filtered.map(p => `
-                        <div style="cursor: pointer;" onclick="openProduct(${p.id}); closeSearch();">
-                            <div style="width: 100%; padding-bottom: 100%; background: ${p.colors[0]}; border-radius: 8px; margin-bottom: 8px;"></div>
-                            <p style="margin: 0;">${p.name}</p>
-                            <p style="opacity: 0.7; margin: 4px 0 0 0;">$${p.price}</p>
+                results.innerHTML = `
+                    <div class="search-section-label">Products</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; color: var(--white); margin-bottom: 24px;">${
+                    filtered.slice(0, 6).map(p => `
+                        <div style="cursor: pointer;" onclick="openProduct(${p.id})">
+                            <div style="aspect-ratio: 1; border-radius: 8px; overflow: hidden; margin-bottom: 8px;">
+                                <img src="${p.shots[0]}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                            </div>
+                            <p style="margin: 0; font-size: 13px;">${p.name}</p>
+                            <p style="opacity: 0.7; margin: 4px 0 0 0; font-size: 13px;">$${p.price}</p>
                         </div>
                     `).join('')}
-                </div>`;
+                    </div>
+                    <button class="search-suggestion" onclick="submitSearch()">
+                        View all ${filtered.length} results
+                    </button>`;
             }
 
             results.classList.add('active');
