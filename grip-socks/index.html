@@ -238,13 +238,30 @@
             opacity: 1;
         }
 
-        .hero-slide-1 {
-            background: linear-gradient(135deg, #FFF7EE 0%, #FCFCFA 100%);
+        .hero-slide img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 35%;
+        }
+
+        /* Scrim keeps the dark cocoa headline legible over photography. */
+        .hero-slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.82) 28%, rgba(255,255,255,0.3) 55%, rgba(255,255,255,0) 80%);
         }
 
         .hero-content {
-            text-align: center;
+            position: relative;
+            text-align: left;
             z-index: 2;
+            max-width: 560px;
+            margin-right: auto;
+            padding-left: 60px;
         }
 
         .hero-eyebrow {
@@ -381,13 +398,13 @@
             height: 100%;
             opacity: 0;
             transition: opacity 0.4s ease-in-out;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            color: var(--text-secondary);
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .product-image.active {
@@ -579,13 +596,9 @@
 
         .brand-intro-image {
             aspect-ratio: 4/3;
-            background: linear-gradient(135deg, #E8DCC8 0%, #F5EFE5 100%);
+            background: var(--light-gray);
             border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            color: var(--text-secondary);
+            overflow: hidden;
         }
 
         .brand-intro-text {
@@ -648,11 +661,6 @@
             background: var(--light-gray);
             border-radius: 4px;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            color: var(--text-secondary);
             transition: opacity 0.4s;
         }
 
@@ -688,17 +696,6 @@
 
         .community-item:hover {
             transform: scale(1.03);
-        }
-
-        .community-item-content {
-            width: 100%;
-            height: 100%;
-            background: var(--light-gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: var(--text-secondary);
         }
 
         /* =======================
@@ -901,6 +898,18 @@
             white-space: nowrap;
         }
 
+        /* Every photo slot crops to fill its frame. */
+        .brand-intro-image img,
+        .product-story-image img,
+        .lifestyle-item img,
+        .community-item img,
+        .review-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .toast {
             position: fixed;
             bottom: 32px;
@@ -958,11 +967,13 @@
             aspect-ratio: 4/5;
             border-radius: 10px;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: var(--text-secondary);
+        }
+
+        .product-gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .product-gallery-thumbnails {
@@ -978,14 +989,18 @@
             cursor: pointer;
             border: 2px solid transparent;
             transition: border-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: var(--text-secondary);
+            overflow: hidden;
         }
 
-        .product-gallery-thumbnail:hover {
+        .product-gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-gallery-thumbnail:hover,
+        .product-gallery-thumbnail.selected {
             border-color: var(--dark-cocoa);
         }
 
@@ -1200,13 +1215,9 @@
 
         .product-story-image {
             aspect-ratio: 4/3;
-            background: linear-gradient(135deg, #F5EFE5 0%, #FCFCFA 100%);
+            background: var(--light-gray);
             border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            color: var(--text-secondary);
+            overflow: hidden;
         }
 
         .product-story-title {
@@ -1265,11 +1276,8 @@
             aspect-ratio: 4/3;
             border-radius: 8px;
             margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: var(--text-secondary);
+            background: var(--light-gray);
+            overflow: hidden;
         }
 
         .review-stars {
@@ -1553,14 +1561,16 @@
     <div id="homePage" class="page active">
         <!-- Hero Carousel -->
         <div class="hero-container">
-            <div class="hero-slide active hero-slide-1">
+            <div class="hero-slide active">
+                <img src="assets/img/studio-hero.jpg" alt="Woman practising Pilates in a bright studio">
                 <div class="hero-content">
                     <h1 class="hero-title">Designed for Movement</h1>
                     <p class="hero-subtitle">Premium grip socks crafted for the modern Pilates lover</p>
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Explore Collection</button>
                 </div>
             </div>
-            <div class="hero-slide" style="background: linear-gradient(135deg, #E8DCC8 0%, #F5EFE5 100%);">
+            <div class="hero-slide">
+                <img src="assets/img/socks-worn.jpg" alt="Close-up of grip socks worn on a reformer">
                 <div class="hero-content">
                     <p class="hero-eyebrow">The Detail</p>
                     <h2 class="hero-title">In Every Stitch</h2>
@@ -1568,7 +1578,8 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Shop New Arrivals</button>
                 </div>
             </div>
-            <div class="hero-slide" style="background: linear-gradient(135deg, #FCFCFA 0%, #FFF7EE 100%);">
+            <div class="hero-slide">
+                <img src="assets/img/studio-wide.jpg" alt="Pilates studio styling">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Studio Days</p>
                     <h2 class="hero-title">Styled Your Way</h2>
@@ -1576,7 +1587,8 @@
                     <button class="hero-cta" onclick="scrollToSection('newArrivals')">Explore Collection</button>
                 </div>
             </div>
-            <div class="hero-slide" style="background: linear-gradient(135deg, #F5EFE5 0%, #FFFFFF 100%);">
+            <div class="hero-slide">
+                <img src="assets/img/grip-function.jpg" alt="Grip socks on a reformer">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Spring 2025</p>
                     <h2 class="hero-title">The New Collection</h2>
@@ -1619,7 +1631,7 @@
         <!-- Brand Introduction -->
         <section class="section">
             <div class="brand-intro">
-                <div class="brand-intro-image">Brand Lifestyle Image</div>
+                <div class="brand-intro-image"><img src="assets/img/studio-wide.jpg" alt="Pilates studio" loading="lazy"></div>
                 <div class="brand-intro-text">
                     <p class="brand-intro-eyebrow">Our Story</p>
                     <h2 class="brand-intro-title">Designed for women who love Pilates, beautiful details, and everyday style.</h2>
@@ -1660,12 +1672,12 @@
                 <p class="section-description">Studios, outfits, and the details we love</p>
             </div>
             <div class="lifestyle-gallery">
-                <div class="lifestyle-item tall">Studio Moment</div>
-                <div class="lifestyle-item wide">Outfit Styling</div>
-                <div class="lifestyle-item">Product Detail</div>
-                <div class="lifestyle-item">Accessories</div>
-                <div class="lifestyle-item">Movement</div>
-                <div class="lifestyle-item">Studio Space</div>
+                <div class="lifestyle-item tall"><img src="assets/img/styling.jpg" alt="Studio moment" loading="lazy"></div>
+                <div class="lifestyle-item wide"><img src="assets/img/studio-wide.jpg" alt="Outfit styling" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/texture.jpg" alt="Product detail" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/socks-worn.jpg" alt="Grip socks" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/grip-function.jpg" alt="Movement" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/morning.jpg" alt="Morning light" loading="lazy"></div>
             </div>
         </section>
 
@@ -1676,12 +1688,12 @@
                 <p class="section-description">Discover how Pilates lovers wear their favorite styles</p>
             </div>
             <div class="community-gallery" id="communityGallery">
-                <div class="community-item"><div class="community-item-content">Community 1</div></div>
-                <div class="community-item"><div class="community-item-content">Community 2</div></div>
-                <div class="community-item"><div class="community-item-content">Community 3</div></div>
-                <div class="community-item"><div class="community-item-content">Community 4</div></div>
-                <div class="community-item"><div class="community-item-content">Community 5</div></div>
-                <div class="community-item"><div class="community-item-content">Community 6</div></div>
+                <div class="community-item"><img src="assets/img/socks-worn.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/studio-hero.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/wearing.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/morning.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/grip-function.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/texture.jpg" alt="" loading="lazy"></div>
             </div>
         </section>
 
@@ -1716,13 +1728,8 @@
             <button onclick="goToPage('home')" style="background: none; border: none; cursor: pointer; margin-bottom: 40px; font-size: 16px; color: var(--dark-cocoa);">← Back to Shop</button>
             <div class="product-detail-container">
                 <div class="product-gallery">
-                    <div class="product-gallery-main" id="galleryMain">Main Image</div>
-                    <div class="product-gallery-thumbnails">
-                        <div class="product-gallery-thumbnail" onclick="changeGalleryImage(0)">1</div>
-                        <div class="product-gallery-thumbnail" onclick="changeGalleryImage(1)">2</div>
-                        <div class="product-gallery-thumbnail" onclick="changeGalleryImage(2)">3</div>
-                        <div class="product-gallery-thumbnail" onclick="changeGalleryImage(3)">4</div>
-                    </div>
+                    <div class="product-gallery-main"><img id="galleryMain" alt=""></div>
+                    <div class="product-gallery-thumbnails" id="galleryThumbs"></div>
                 </div>
                 <div class="product-detail-info">
                     <div class="product-detail-header">
@@ -1778,7 +1785,7 @@
 
             <!-- Lifestyle Story -->
             <section class="product-story">
-                <div class="product-story-image">Lifestyle Story Image</div>
+                <div class="product-story-image"><img src="assets/img/morning.jpg" alt="Morning light" loading="lazy"></div>
                 <div class="product-story-text">
                     <h3 class="product-story-title">Designed to bring a little more personality into every Pilates class.</h3>
                     <p class="product-story-body">Made for the mornings you look forward to — the studio, the light, the small details that make the hour yours.</p>
@@ -2062,6 +2069,23 @@
             }
         ];
 
+        // Hover sequence per product: worn → styled → detail → grip.
+        // One sock design was photographed, so sets are rotated for visual variety;
+        // the colour swatches carry the range until real per-colourway shots exist.
+        // Every product leads with a different photo — products share grids, and
+        // identical lead images side by side read as a rendering bug.
+        const SHOT_SETS = [
+            ['socks-worn', 'styling', 'texture', 'grip-function'],
+            ['wearing', 'studio-wide', 'texture', 'grip-function'],
+            ['styling', 'studio-hero', 'texture', 'grip-function'],
+            ['studio-wide', 'morning', 'texture', 'grip-function'],
+            ['morning', 'wearing', 'texture', 'grip-function'],
+            ['grip-function', 'socks-worn', 'styling', 'texture']
+        ];
+        products.forEach((p, i) => {
+            p.shots = SHOT_SETS[i].map(name => `assets/img/${name}.jpg`);
+        });
+
         let currentPage = 'home';
         let cart = [];
         let wishlist = [];
@@ -2131,12 +2155,11 @@
             const card = document.createElement('div');
             card.className = 'product-card';
             card.dataset.productId = product.id;
-            const shots = ['Worn', 'Styled', 'Detail', 'Grip'];
             card.innerHTML = `
                 <div class="product-image-container">
                     ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
-                    ${shots.map((label, i) => `
-                        <div class="product-image ${i === 0 ? 'active' : ''}" style="background: ${product.colors[i % product.colors.length]};">${label}</div>
+                    ${product.shots.map((src, i) => `
+                        <div class="product-image ${i === 0 ? 'active' : ''}"><img src="${src}" alt="${product.name}" loading="lazy"></div>
                     `).join('')}
                     <div class="product-card-actions">
                         <button class="wishlist-btn" onclick="toggleWishlist(${product.id}); event.stopPropagation();">♡</button>
@@ -2220,6 +2243,7 @@
                 <button class="color-option ${i === 0 ? 'selected' : ''}" style="background: ${color};" onclick="selectColor(this)"></button>
             `).join('');
 
+            renderGallery(currentProduct);
             renderReviews(currentProduct);
             renderRecommendations(currentProduct);
 
@@ -2234,6 +2258,12 @@
             goToPage('productDetail');
         }
 
+        const REVIEW_PHOTOS = [
+            'assets/img/wearing.jpg',
+            'assets/img/socks-worn.jpg',
+            'assets/img/styling.jpg'
+        ];
+
         const reviews = [
             { stars: 5, text: 'The colour is even prettier in person. I get compliments at the studio every week.', author: 'Amelia R.' },
             { stars: 5, text: 'Soft, stays put, and actually looks lovely with my leggings. Buying a second pair.', author: 'Jena K.' },
@@ -2243,7 +2273,7 @@
         function renderReviews(product) {
             document.getElementById('reviewsGrid').innerHTML = reviews.map((r, i) => `
                 <div class="review-card">
-                    <div class="review-photo" style="background: ${product.colors[i % product.colors.length]};">Customer Photo</div>
+                    <div class="review-photo"><img src="${REVIEW_PHOTOS[i]}" alt="" loading="lazy"></div>
                     <div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
                     <p class="review-text">${r.text}</p>
                     <div class="review-author">${r.author}</div>
@@ -2303,10 +2333,20 @@
             header.querySelector('span').textContent = content.classList.contains('active') ? '−' : '+';
         }
 
+        function renderGallery(product) {
+            document.getElementById('galleryMain').src = product.shots[0];
+            document.getElementById('galleryMain').alt = product.name;
+            document.getElementById('galleryThumbs').innerHTML = product.shots.map((src, i) => `
+                <div class="product-gallery-thumbnail ${i === 0 ? 'selected' : ''}" onclick="changeGalleryImage(${i})">
+                    <img src="${src}" alt="">
+                </div>
+            `).join('');
+        }
+
         function changeGalleryImage(index) {
-            const thumbnails = document.querySelectorAll('.product-gallery-thumbnail');
-            thumbnails.forEach((t, i) => {
-                t.style.borderColor = i === index ? 'var(--dark-cocoa)' : 'transparent';
+            document.getElementById('galleryMain').src = currentProduct.shots[index];
+            document.querySelectorAll('.product-gallery-thumbnail').forEach((t, i) => {
+                t.classList.toggle('selected', i === index);
             });
         }
 
