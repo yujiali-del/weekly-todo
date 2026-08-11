@@ -1948,7 +1948,7 @@
         <!-- Hero Carousel -->
         <div class="hero-container">
             <div class="hero-slide active" data-shot="hero-1-brand">
-                <img src="assets/img/studio-hero.jpg" alt="Woman practising Pilates in a bright studio">
+                <img style="object-position: center 62%" src="assets/img/studio-seated.jpg" alt="Woman wearing grip socks beside a Pilates reformer">
                 <div class="hero-content">
                     <h1 class="hero-title">Designed for Movement</h1>
                     <p class="hero-subtitle">Premium grip socks crafted for the modern Pilates lover</p>
@@ -1956,7 +1956,7 @@
                 </div>
             </div>
             <div class="hero-slide" data-shot="hero-2-product-detail">
-                <img src="assets/img/socks-clean.jpg" alt="Close-up of grip socks worn on a reformer">
+                <img style="object-position: center 55%" src="assets/img/socks-clean.jpg" alt="Close-up of grip socks worn on a reformer">
                 <div class="hero-content">
                     <p class="hero-eyebrow">The Detail</p>
                     <h2 class="hero-title">In Every Stitch</h2>
@@ -1965,7 +1965,7 @@
                 </div>
             </div>
             <div class="hero-slide" data-shot="hero-3-lifestyle">
-                <img src="assets/img/studio-wide.jpg" alt="Pilates studio styling">
+                <img style="object-position: center 40%" src="assets/img/mat-carry.jpg" alt="Woman holding a Pilates mat">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Studio Days</p>
                     <h2 class="hero-title">Styled Your Way</h2>
@@ -1974,7 +1974,7 @@
                 </div>
             </div>
             <div class="hero-slide" data-shot="hero-4-collection">
-                <img src="assets/img/grip-function.jpg" alt="Grip socks on a reformer">
+                <img style="object-position: center 50%" src="assets/img/socks-pair.jpg" alt="The collection">
                 <div class="hero-content">
                     <p class="hero-eyebrow">Spring 2025</p>
                     <h2 class="hero-title">The New Collection</h2>
@@ -2023,7 +2023,7 @@
         <!-- Brand Introduction -->
         <section class="section">
             <div class="brand-intro">
-                <div class="brand-intro-image" data-shot="home-brand-intro"><img src="assets/img/styling.jpg" alt="Pilates studio" loading="lazy"></div>
+                <div class="brand-intro-image" data-shot="home-brand-intro"><img src="assets/img/outfit-styling.jpg" alt="Pilates studio" loading="lazy"></div>
                 <div class="brand-intro-text">
                     <p class="brand-intro-eyebrow">Our Story</p>
                     <h2 class="brand-intro-title">Designed for women who love Pilates, beautiful details, and everyday style.</h2>
@@ -2064,12 +2064,12 @@
                 <p class="section-description">Studios, outfits, and the details we love</p>
             </div>
             <div class="lifestyle-gallery" data-shot="home-lifestyle-gallery">
-                <div class="lifestyle-item tall"><img src="assets/img/studio-hero.jpg" alt="Studio moment" loading="lazy"></div>
-                <div class="lifestyle-item wide"><img src="assets/img/styling.jpg" alt="Outfit styling" loading="lazy"></div>
+                <div class="lifestyle-item tall"><img src="assets/img/studio-seated.jpg" alt="Studio moment" loading="lazy"></div>
+                <div class="lifestyle-item wide"><img src="assets/img/outfit-styling.jpg" alt="Outfit styling" loading="lazy"></div>
                 <div class="lifestyle-item"><img src="assets/img/socks-detail.jpg" alt="Product detail" loading="lazy"></div>
-                <div class="lifestyle-item"><img src="assets/img/studio-wide.jpg" alt="Community moment" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/community-two.jpg" alt="Community moment" loading="lazy"></div>
                 <div class="lifestyle-item"><img src="assets/img/socks-cozy.jpg" alt="Seasonal lifestyle" loading="lazy"></div>
-                <div class="lifestyle-item"><img src="assets/img/socks-clean.jpg" alt="Product detail" loading="lazy"></div>
+                <div class="lifestyle-item"><img src="assets/img/socks-clean.jpg" alt="Grip socks" loading="lazy"></div>
             </div>
         </section>
 
@@ -2080,10 +2080,10 @@
                 <p class="section-description">Discover how Pilates lovers wear their favorite styles</p>
             </div>
             <div class="community-gallery" id="communityGallery" data-shot="home-community-grid">
+                <div class="community-item"><img src="assets/img/community-two.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/studio-seated.jpg" alt="" loading="lazy"></div>
                 <div class="community-item"><img src="assets/img/socks-clean.jpg" alt="" loading="lazy"></div>
-                <div class="community-item"><img src="assets/img/studio-hero.jpg" alt="" loading="lazy"></div>
-                <div class="community-item"><img src="assets/img/feet-pointed.jpg" alt="" loading="lazy"></div>
-                <div class="community-item"><img src="assets/img/morning.jpg" alt="" loading="lazy"></div>
+                <div class="community-item"><img src="assets/img/reformer-seated.jpg" alt="" loading="lazy"></div>
                 <div class="community-item"><img src="assets/img/socks-pair.jpg" alt="" loading="lazy"></div>
                 <div class="community-item"><img src="assets/img/socks-cozy.jpg" alt="" loading="lazy"></div>
             </div>
@@ -2177,7 +2177,7 @@
 
             <!-- Lifestyle Story -->
             <section class="product-story">
-                <div class="product-story-image" data-shot="pdp-lifestyle-story"><img src="assets/img/morning.jpg" alt="Morning light" loading="lazy"></div>
+                <div class="product-story-image" data-shot="pdp-lifestyle-story"><img src="assets/img/mat-carry.jpg" alt="Morning light" loading="lazy"></div>
                 <div class="product-story-text">
                     <h3 class="product-story-title">Designed to bring a little more personality into every Pilates class.</h3>
                     <p class="product-story-body">Made for the mornings you look forward to — the studio, the light, the small details that make the hour yours.</p>
@@ -2530,22 +2530,25 @@
 
         const IMG = name => `assets/img/${name}.jpg`;
 
-        const ALL_FRAMES = ['socks-clean', 'socks-worn', 'feet-pointed', 'socks-pair',
-                            'wearing', 'styling', 'morning', 'socks-cozy',
-                            'studio-wide', 'studio-hero', 'grip-function',
-                            'socks-detail', 'texture'];
+        const ALL_FRAMES = ['socks-clean', 'socks-worn', 'studio-seated', 'reformer-seated',
+                            'wearing', 'socks-cozy', 'socks-pair',
+                            'outfit-styling', 'mat-carry', 'styling', 'studio-wide',
+                            'studio-hero', 'community-two', 'morning',
+                            'grip-function', 'socks-detail', 'texture'];
 
-        // Frames where the socks are legible enough to carry a main slot.
-        const WORN_POOL = ['socks-clean', 'socks-worn', 'feet-pointed', 'wearing', 'socks-cozy'];
-        // Kept disjoint from WORN_POOL so slot 3 can never collide with 1 or 2.
-        const CONTEXT_POOL = ['styling', 'studio-wide', 'studio-hero', 'morning'];
-        // Detail slot alternates so not every product ends on the same macro.
+        // Slot 1/2 need the socks legible — V2 calls these "worn" and "wearing effect".
+        const WORN_POOL = ['socks-clean', 'studio-seated', 'socks-worn', 'reformer-seated',
+                           'wearing', 'socks-cozy'];
+        // Slot 3 is outfit styling. Kept disjoint from WORN_POOL so it can't collide.
+        const CONTEXT_POOL = ['outfit-styling', 'mat-carry', 'styling', 'studio-wide',
+                              'studio-hero', 'morning'];
+        // Slot 5 detail alternates so not every product ends on the same macro.
         const DETAIL_POOL = ['socks-detail', 'texture', 'socks-pair'];
 
         // Default colourway leads, chosen so no merchandised grid repeats a lead:
         // New Arrivals = index 0,5,6,7 · Best Sellers = index 0,2,4,6.
-        const DEFAULT_LEADS = ['socks-clean', 'socks-detail', 'socks-worn', 'studio-hero',
-                               'wearing', 'feet-pointed', 'socks-cozy', 'styling'];
+        const DEFAULT_LEADS = ['socks-clean', 'socks-detail', 'studio-seated', 'studio-hero',
+                               'socks-worn', 'reformer-seated', 'wearing', 'socks-cozy'];
 
         function VARIANT_FILES(productIndex, colorIndex) {
             const i = productIndex, c = colorIndex;
