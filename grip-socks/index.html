@@ -2935,7 +2935,7 @@
             const productId = product.id;
             selectedColorIndex = 0;
 
-            recentlyViewed = [productId, ...recentlyViewed.filter(id => id !== productId)].slice(0, 4);
+            recentlyViewed = [productId, ...recentlyViewed.filter(id => id !== productId)].slice(0, 12);
             localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
             renderRecentlyViewed();
 
