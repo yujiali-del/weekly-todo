@@ -249,6 +249,42 @@
             }
         }
 
+        /* Recently-viewed drawer: single column, sized for the 400px cart-drawer width */
+        .rv-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .rv-grid .product-card {
+            flex-direction: row;
+            gap: 16px;
+        }
+
+        .rv-grid .product-image-container {
+            width: 100px;
+            flex-shrink: 0;
+            padding-bottom: 0;
+            height: 120px;
+        }
+
+        .rv-grid .product-card-actions {
+            top: 8px;
+            right: 8px;
+            gap: 6px;
+        }
+
+        .rv-grid .wishlist-btn,
+        .rv-grid .quick-add-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+
+        .rv-grid .product-info {
+            justify-content: center;
+        }
+
         .search-results {
             display: none;
             color: var(--white);
@@ -1923,6 +1959,7 @@
         <div class="nav-icons">
             <button class="icon-btn menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
             <button class="icon-btn" onclick="openSearch()">🔍</button>
+            <button class="icon-btn" onclick="openRecentlyViewedPanel()" aria-label="Recently viewed">🕘</button>
             <button class="icon-btn" onclick="goToPage('wishlist')">❤️</button>
             <button class="icon-btn" style="position: relative;" onclick="openCart()" aria-label="Open bag">
                 🛍️
@@ -1952,6 +1989,18 @@
             </div>
             <p class="cart-note">Shipping and taxes calculated at checkout.</p>
             <button class="cart-checkout" onclick="checkout()">Checkout</button>
+        </div>
+    </aside>
+
+    <div class="cart-scrim" id="rvScrim" onclick="closeRecentlyViewedPanel()"></div>
+    <aside class="cart-drawer" id="rvDrawer" aria-label="Recently viewed">
+        <div class="cart-header">
+            <span class="cart-title">Recently Viewed</span>
+            <button class="cart-close" onclick="closeRecentlyViewedPanel()" aria-label="Close">✕</button>
+        </div>
+        <div class="cart-items" id="rvItems">
+            <div class="rv-grid" id="rvGrid"></div>
+            <p id="rvEmpty" style="display: none; color: var(--text-secondary); text-align: center; padding: 40px 0;">You haven't viewed anything yet — browse the shop to see items here.</p>
         </div>
     </aside>
 
@@ -3192,6 +3241,27 @@
         function closeCart() {
             document.getElementById('cartDrawer').classList.remove('open');
             document.getElementById('cartScrim').classList.remove('open');
+        }
+
+        function openRecentlyViewedPanel() {
+            renderRecentlyViewedPanel();
+            document.getElementById('rvDrawer').classList.add('open');
+            document.getElementById('rvScrim').classList.add('open');
+        }
+
+        function closeRecentlyViewedPanel() {
+            document.getElementById('rvDrawer').classList.remove('open');
+            document.getElementById('rvScrim').classList.remove('open');
+        }
+
+        function renderRecentlyViewedPanel() {
+            const grid = document.getElementById('rvGrid');
+            const empty = document.getElementById('rvEmpty');
+            const items = recentlyViewed.map(id => products.find(p => p.id === id)).filter(Boolean);
+            grid.innerHTML = '';
+            items.forEach(p => grid.appendChild(createProductCard(p)));
+            grid.style.display = items.length ? 'grid' : 'none';
+            empty.style.display = items.length ? 'none' : 'block';
         }
 
         function checkout() {
